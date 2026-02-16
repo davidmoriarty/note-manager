@@ -1,48 +1,45 @@
 // client/src/routes/notes/editor/$noteId.tsx
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { NotesEditor } from "@/components/notes/NotesEditor";
 import { NotesPreview } from "@/components/notes/NotesPreview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { type Note, notesApi } from "@/lib/api";
+import { notesApi } from "@/lib/api";
 import { requireAuth } from "@/lib/route-guard";
 
 function NoteEditorPage() {
   const navigate = useNavigate();
   const { noteId } = Route.useParams();
 
+  // Fetched once by the route loader
+  const loadedNote = Route.useLoaderData();
+
   const [tab, setTab] = useState("editor");
-  const [note, setNote] = useState<Note | null>(null);
-  const [content, setContent] = useState("");
 
-  // Fetch note
-  useEffect(() => {
-    const idNum = Number(noteId);
-    if (!noteId || Number.isNaN(idNum)) return;
+  // Keep local editable state (so typing doesn't refetch)
+  const [note, setNote] = useState(loadedNote);
+  const [content, setContent] = useState(loadedNote.content);
 
-    notesApi.getOne(idNum).then((fetched) => {
-      if (!fetched) return;
-      setNote(fetched);
-      setContent(fetched.content);
+  // if title changes in editor, preview should reflect it
+  const previewTitle = useMemo(
+    () => note?.title ?? loadedNote.title,
+    [note, loadedNote.title],
+  );
+
+  const handleSave = async (title: string, body: string): Promise<void> => {
+    const updated = await notesApi.update(Number(noteId), {
+      title,
+      content: body,
     });
-  }, [noteId]);
-
-  const handleSave = async (title: string, content: string): Promise<void> => {
-    if (!noteId) return;
-
-    const updated = await notesApi.update(Number(noteId), { title, content });
     setNote(updated);
     setContent(updated.content);
-
-    // Navigate to viewer page after saving
-    navigate({ to: `/notes/viewer/${noteId}` });
+    navigate({ to: "/notes/viewer/$noteId", params: { noteId } });
   };
 
   const handleDelete = async () => {
-    if (!noteId) return;
     await notesApi.remove(Number(noteId));
     navigate({ to: "/notes" });
   };
@@ -73,14 +70,14 @@ function NoteEditorPage() {
                   })
                 }
                 onTitleChange={(t) =>
-                  setNote((prev) => prev && { ...prev, title: t })
+                  setNote((prev) => (prev ? { ...prev, title: t } : prev))
                 }
                 onContentChange={setContent}
               />
             </TabsContent>
 
             <TabsContent value="preview">
-              <NotesPreview title={note?.title} content={content} />
+              <NotesPreview title={previewTitle} content={content} />
             </TabsContent>
           </Tabs>
         </Container>
@@ -93,5 +90,28 @@ export const Route = createFileRoute("/notes/editor/$noteId")({
   beforeLoad: async () => {
     requireAuth();
   },
+
+  loader: async ({ params }) => {
+    const idNum = Number(params.noteId);
+    if (Number.isNaN(idNum)) {
+      throw new Error("Invalid note id");
+    }
+    return notesApi.getOne(idNum);
+  },
+
+  head: ({ loaderData }) => ({
+    meta: [
+      {
+        name: "title",
+        content: `Edit: ${loaderData?.title || "Untitled Note"} | Note Manager`,
+      },
+      {
+        name: "description",
+        content:
+          "Edit your note with real-time Markdown preview and secure JWT-based authentication.",
+      },
+    ],
+  }),
+
   component: NoteEditorPage,
 });

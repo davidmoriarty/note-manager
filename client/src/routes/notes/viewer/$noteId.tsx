@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { LinkButton } from "@/components/ui/LinkButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type Note, notesApi } from "@/lib/api";
+import { buildHead } from "@/lib/meta";
 import { requireAuth } from "@/lib/route-guard";
 
 function NotesViewerPage() {
@@ -117,5 +118,14 @@ export const Route = createFileRoute("/notes/viewer/$noteId")({
   beforeLoad: async () => {
     requireAuth();
   },
+
+  head: () =>
+    buildHead({
+      title: "View Note",
+      description:
+        "View a single note rendered with Markdown support inside a protected session.",
+      path: "/notes/viewer/$noteId",
+    }),
+
   component: NotesViewerPage,
 });

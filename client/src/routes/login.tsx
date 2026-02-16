@@ -9,6 +9,7 @@ import { Field, FieldError, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { LinkButton } from "@/components/ui/LinkButton";
 import { submitLogin } from "@/lib/auth-submit";
+import { buildHead } from "@/lib/meta";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -110,5 +111,11 @@ function LoginPage() {
 }
 
 export const Route = createFileRoute("/login")({
+  head: () =>
+    buildHead({
+      title: "Login",
+      description: "Sign in to access your notes securely.",
+      path: "/login",
+    }),
   component: LoginPage,
 });

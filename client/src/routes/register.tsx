@@ -8,6 +8,7 @@ import { Field, FieldError, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { LinkButton } from "@/components/ui/LinkButton";
 import { submitRegister } from "@/lib/auth-submit";
+import { buildHead } from "@/lib/meta";
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -123,5 +124,12 @@ function RegisterPage() {
 }
 
 export const Route = createFileRoute("/register")({
+  head: () =>
+    buildHead({
+      title: "Sign up",
+      description:
+        "Create your account to securely write, preview, and manage your notes.",
+      path: "/register",
+    }),
   component: RegisterPage,
 });

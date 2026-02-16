@@ -19,6 +19,7 @@ import { LinkButton } from "@/components/ui/LinkButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toastMessage } from "@/components/ui/toast";
 import { type Note, notesApi } from "@/lib/api";
+import { buildHead } from "@/lib/meta";
 import { requireAuth } from "@/lib/route-guard";
 
 function NotesOverviewPage() {
@@ -175,5 +176,14 @@ export const Route = createFileRoute("/notes/")({
   beforeLoad: async () => {
     requireAuth();
   },
+
+  head: () =>
+    buildHead({
+      title: "Notes Overview",
+      description:
+        "Access and manage all your notes with protected routes and secure JWT authentication.",
+      path: "/notes",
+    }),
+
   component: NotesOverviewPage,
 });

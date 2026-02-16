@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { ScrollDownIndicator } from "@/components/motion/ScrollDownIndicator";
 import { LinkButton } from "@/components/ui/LinkButton";
+import { buildHead } from "@/lib/meta";
 
 function LandingPage() {
   return (
@@ -25,5 +26,12 @@ function LandingPage() {
 }
 
 export const Route = createFileRoute("/")({
+  head: () =>
+    buildHead({
+      title: "Note Manager",
+      description:
+        "Write, preview, and manage your notes securely with JWT authentication and a modern full-stack architecture.",
+      path: "/",
+    }),
   component: LandingPage,
 });

@@ -7,6 +7,7 @@ import { NotesEditor } from "@/components/notes/NotesEditor";
 import { NotesPreview } from "@/components/notes/NotesPreview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { notesApi } from "@/lib/api";
+import { buildHead } from "@/lib/meta";
 import { requireAuth } from "@/lib/route-guard";
 
 function NewNotePage() {
@@ -61,5 +62,14 @@ export const Route = createFileRoute("/notes/editor/")({
   beforeLoad: async () => {
     requireAuth();
   },
+
+  head: () =>
+    buildHead({
+      title: "New Note",
+      description:
+        "Edit your note with real-time Markdown preview and secure token-based authentication.",
+      path: "/notes/editor",
+    }),
+
   component: NewNotePage,
 });
