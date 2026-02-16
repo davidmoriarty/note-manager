@@ -25,7 +25,6 @@ type HeadConfig = {
 
 const SITE_NAME = "Note Manager";
 const BASE_URL = import.meta.env.VITE_APP_URL ?? "https://localhost:5173";
-const OG_IMAGE = `${BASE_URL}/og/og-image.png`;
 
 export function buildHead({
   title,
