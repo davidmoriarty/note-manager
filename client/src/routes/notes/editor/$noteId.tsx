@@ -8,6 +8,7 @@ import { NotesEditor } from "@/components/notes/NotesEditor";
 import { NotesPreview } from "@/components/notes/NotesPreview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { notesApi } from "@/lib/api";
+import { buildHead } from "@/lib/meta";
 import { requireAuth } from "@/lib/route-guard";
 
 function NoteEditorPage() {
@@ -99,19 +100,13 @@ export const Route = createFileRoute("/notes/editor/$noteId")({
     return notesApi.getOne(idNum);
   },
 
-  head: ({ loaderData }) => ({
-    meta: [
-      {
-        name: "title",
-        content: `Edit: ${loaderData?.title || "Untitled Note"} | Note Manager`,
-      },
-      {
-        name: "description",
-        content:
-          "Edit your note with real-time Markdown preview and secure JWT-based authentication.",
-      },
-    ],
-  }),
+  head: ({ loaderData }) =>
+    buildHead({
+      title: loaderData?.title ?? "Note",
+      description:
+        "Edit your note with real-time Markdown preview and secure JWT-based authentication.",
+      path: `/notes/editor/${loaderData?.id}`,
+    }),
 
   component: NoteEditorPage,
 });

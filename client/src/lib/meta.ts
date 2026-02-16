@@ -20,12 +20,14 @@ type HeadConfig = {
   title: string;
   description?: string;
   path?: string;
+  type?: "website" | "article";
 };
 
 const SITE_NAME = "Note Manager";
-const BASE_URL = import.meta.env.VITE_APP_URL || "https://localhost:5173";
+const BASE_URL = import.meta.env.VITE_APP_URL ?? "https://localhost:5173";
+const OG_IMAGE = `${BASE_URL}/og/og-image.png`;
 
-export function buildHead({ title, description, path }: HeadConfig): {
+export function buildHead({ title, description, path, type }: HeadConfig): {
   title: string;
   meta?: MetaTag[];
   links?: LinkTag[];
@@ -36,6 +38,10 @@ export function buildHead({ title, description, path }: HeadConfig): {
   const meta: MetaTag[] = [
     { property: "og:title", content: fullTitle },
     { property: "og:url", content: url },
+    { property: "og:type", content: type ?? "website" },
+    { property: "og:image", content: OG_IMAGE },
+    { name: "twitter:image", content: OG_IMAGE },
+    { name: "twitter:card", content: "summary_large_image" },
   ];
 
   if (description) {
