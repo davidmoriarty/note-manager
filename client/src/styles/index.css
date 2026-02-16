@@ -1,0 +1,12 @@
+/* index.css */
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Theme imports */
+@import "@/styles/shadcn.css";
+@import "@/styles/base.css"; /* borders & focus rings */
+@import "@/styles/theme.css"; /* core theme variables */
+@import "@/styles/motion-tokens.css"; /* animation variables */
+@import "@/styles/animations.css"; /* keyframes & animation utilities */
+
+@custom-variant dark (&:where(.dark, .dark *));

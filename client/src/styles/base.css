@@ -1,0 +1,25 @@
+/* base.css */
+
+@layer base {
+	input,
+	textarea,
+	select,
+	button,
+	fieldset {
+		border-color: var(--border);
+		outline-color: color-mix(in oklab, var(--color-ring) 50% transparent);
+	}
+
+	input:focus,
+	textarea:focus,
+	select:focus,
+	button:focus {
+		outline-offset: 2px;
+		outline: var(--color-ring) solid 2px;
+	}
+
+	[contenteditable][data-placeholder]:empty:before {
+		content: attr(data-placeholder);
+		color: var(--muted-foreground);
+	}
+}

@@ -1,0 +1,37 @@
+/* motion-tokens.css */
+
+/* -------------------------------------------------------------------------- */
+/* Global Animation Tokens                                                    */
+/* These define consistent animation behavior across the entire design system */
+/* -------------------------------------------------------------------------- */
+
+:root {
+	--anim-speed: 150ms;
+	--anim-distance: 16px;
+	--anim-ease: cubic-bezier(0.16, 0.1, 0.3, 1);
+	--anim-stagger-step: 20ms;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Page Transition (used by PageTransition.tsx)                               */
+/* Base enter state before the JS flip triggers active                        */
+/* -------------------------------------------------------------------------- */
+
+.page-enter {
+	opacity: 0;
+	transform: translateY(var(--distance, var(--anim-distance)));
+
+	transition:
+		opacity var(--duration, var(--anim-speed)) var(--easing, var(--anim-ease)),
+		transform var(--duration, var(--anim-speed)) var(--easing, var(--anim-ease));
+}
+
+/* -------------------------------------------------------------------------- */
+/* Page Transition Active State                                               */
+/* Gets applied one rAF later in PageTransition.tsx                           */
+/* -------------------------------------------------------------------------- */
+
+.page-enter-active {
+	opacity: 1;
+	transform: translateY(0);
+}
