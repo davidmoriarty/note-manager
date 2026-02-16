@@ -9,7 +9,7 @@ import type {
 type MetaTag = DetailedHTMLProps<
   MetaHTMLAttributes<HTMLMetaElement>,
   HTMLMetaElement
->;
+> & { title?: string };
 
 type LinkTag = DetailedHTMLProps<
   LinkHTMLAttributes<HTMLLinkElement>,
@@ -27,37 +27,44 @@ const SITE_NAME = "Note Manager";
 const BASE_URL = import.meta.env.VITE_APP_URL ?? "https://localhost:5173";
 const OG_IMAGE = `${BASE_URL}/og/og-image.png`;
 
-export function buildHead({ title, description, path, type }: HeadConfig): {
-  title: string;
+export function buildHead({
+  title,
+  description,
+  path,
+  type = "website",
+}: HeadConfig): {
   meta?: MetaTag[];
   links?: LinkTag[];
 } {
   const fullTitle = `${title} | ${SITE_NAME}`;
   const url = path ? `${BASE_URL}${path}` : BASE_URL;
+  const imageUrl = `${BASE_URL}/og/og-image.png`;
 
   const meta: MetaTag[] = [
+    { title: fullTitle },
+    { name: "description", content: description ?? "" },
+
+    { property: "og:type", content: type ?? "website" },
     { property: "og:title", content: fullTitle },
     { property: "og:url", content: url },
-    { property: "og:type", content: type ?? "website" },
-    { property: "og:image", content: OG_IMAGE },
-    { name: "twitter:image", content: OG_IMAGE },
+    { property: "og:image", content: imageUrl },
+
     { name: "twitter:card", content: "summary_large_image" },
-  ];
+    { name: "twitter:title", content: fullTitle },
+    { name: "twitter:image", content: imageUrl },
+  ].filter((m) => {
+    if (m.name === "description" && !m.content) return false;
+    return true;
+  });
 
   if (description) {
-    meta.push(
-      { name: "description", content: description },
-      { property: "og:description", content: description },
-    );
+    meta.push({ property: "og:description", content: description });
+    meta.push({ name: "twitter:description", content: description });
   }
 
-  const links: LinkTag[] = [];
-  if (path) {
-    links.push({ rel: "canonical", href: url });
-  }
+  const links: LinkTag[] = path ? [{ rel: "canonical", href: url }] : [];
 
   return {
-    title: fullTitle,
     meta,
     links: links.length ? links : undefined,
   };
