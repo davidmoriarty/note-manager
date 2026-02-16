@@ -1,5 +1,5 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+//import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { useEffect } from "react";
 import { ErrorPage } from "@/components/error/ErrorPage";
 import { Footer } from "@/components/layout/Footer";
@@ -20,7 +20,7 @@ function RootLayout() {
       </main>
       <Footer />
       <Toaster />
-      {import.meta.env.DEV && <TanStackRouterDevtools />}
+      {/*{import.meta.env.DEV && <TanStackRouterDevtools />}*/}
     </>
   );
 }

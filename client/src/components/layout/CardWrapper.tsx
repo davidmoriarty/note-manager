@@ -11,7 +11,7 @@ export function CardWrapper({ children, className = "" }: Props) {
   return (
     <div
       className={cn(
-        "card-wrapper bg-card text-card-foreground border border-border rounded-lg p-4 shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md",
+        "card-wrapper bg-card text-card-foreground border border-border/60 rounded-lg p-4 shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md",
         className,
       )}
     >
