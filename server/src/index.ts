@@ -14,19 +14,49 @@ import {
 import { authMiddleware } from "./lib/middleware/auth";
 import { prisma } from "./lib/prisma";
 
-export const app = new Hono()
+const startedAtMs = Date.now();
 
+const isProd = process.env.NODE_ENV === "production";
+
+const refreshCookieOptions = {
+  httpOnly: true,
+  path: "/",
+  sameSite: (isProd ? "None" : "Lax") as "None" | "Lax",
+  secure: isProd,
+  maxAge: 60 * 60 * 24 * 30,
+};
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.CLIENT_ORIGIN, // e.g. https://note-manager.pages.dev
+].filter(Boolean) as string[];
+
+export const app = new Hono()
+  .use("*", logger())
   .use(
     "*",
     cors({
-      origin: "http://localhost:5173",
-      credentials: true,
+      origin: (origin) => {
+        // Allow non-browser / same-origin / curl where Origin is missing
+        if (!origin) return origin;
+
+        return allowedOrigins.includes(origin) ? origin : null;
+      },
       allowHeaders: ["Content-Type", "Authorization"],
-      exposeHeaders: ["Content-Length"],
+      allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      credentials: true,
     }),
   )
 
-  .use("*", logger())
+  .get("/__info", (c) => {
+    const uptimeSeconds = Math.floor((Date.now() - startedAtMs) / 1000);
+    return c.json({
+      name: "note-manager-api",
+      nodeEnv: process.env.NODE_ENV ?? "development",
+      uptimeSeconds,
+      clientOrigin: process.env.CLIENT_ORIGIN ?? null,
+    });
+  })
 
   // Test Routes
   .get("/", (c) => {
@@ -88,13 +118,7 @@ export const app = new Hono()
     const refreshToken = await createRefreshToken(user.id);
 
     // set HttpOnly cookie
-    setCookie(c, "refresh", refreshToken, {
-      httpOnly: true,
-      path: "/",
-      sameSite: "Lax",
-      secure: false,
-      maxAge: 60 * 60 * 24 * 30,
-    });
+    setCookie(c, "refresh", refreshToken, refreshCookieOptions);
 
     return c.json(
       {
@@ -123,13 +147,7 @@ export const app = new Hono()
       const newRefreshToken = await createRefreshToken(validToken.userId);
       await revokeRefreshTokenById(validToken.id);
 
-      setCookie(c, "refresh", newRefreshToken, {
-        httpOnly: true,
-        path: "/",
-        sameSite: "Lax",
-        secure: false,
-        maxAge: 60 * 60 * 24 * 30,
-      });
+      setCookie(c, "refresh", newRefreshToken, refreshCookieOptions);
 
       return c.json({ token: accessToken }, { status: 200 });
     } catch (err) {
@@ -151,13 +169,7 @@ export const app = new Hono()
       }
     }
 
-    setCookie(c, "refresh", "", {
-      httpOnly: true,
-      path: "/",
-      sameSite: "Lax",
-      secure: false,
-      maxAge: 0,
-    });
+    setCookie(c, "refresh", "", { ...refreshCookieOptions, maxAge: 0 });
 
     return c.json({ success: true });
   })
@@ -252,5 +264,3 @@ export const app = new Hono()
     await prisma.note.delete({ where: { id } });
     return c.json({ success: true }, { status: 200 });
   });
-
-export default app;
