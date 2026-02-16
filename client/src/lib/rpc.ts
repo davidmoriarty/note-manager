@@ -1,5 +1,5 @@
 // client/src/lib/rpc.ts
-import { hcWithType } from "../../../server/src/client";
+import { hc } from "hono/client";
 
 const BASE_URL =
   import.meta.env.MODE === "development"
@@ -10,7 +10,7 @@ if (!BASE_URL) {
   throw new Error("BASE_URL is not defined");
 }
 
-export const rpc = hcWithType(BASE_URL, {
+export const rpc = hc(BASE_URL, {
   fetch: (input: RequestInfo | URL, init?: RequestInit) =>
     fetch(input, {
       ...init,
