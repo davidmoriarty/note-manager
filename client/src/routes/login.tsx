@@ -113,7 +113,7 @@ function LoginPage() {
 export const Route = createFileRoute("/login")({
   head: () =>
     buildHead({
-      title: "Login",
+      title: "Sign in",
       description: "Sign in to access your notes securely.",
       path: "/login",
     }),

@@ -52,7 +52,7 @@ function RegisterPage() {
       >
         <Container className="bg-gray-200 dark:bg-slate-800 rounded max-w-3xl px-6 py-8">
           <div>
-            <h1 className="text-4xl mb-4">Create an account</h1>
+            <h1 className="text-4xl mb-4">Sign up</h1>
             <p className="max-w-[40ch] mx-auto">
               An account allows you to use the notes services. Creating an
               account is required.
