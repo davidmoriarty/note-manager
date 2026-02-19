@@ -15,14 +15,11 @@ import { authMiddleware } from "./lib/middleware/auth";
 import { prisma } from "./lib/prisma";
 
 const startedAtMs = Date.now();
-
-const isProd = process.env.NODE_ENV === "production";
-
 const refreshCookieOptions = {
   httpOnly: true,
   path: "/",
-  sameSite: (isProd ? "None" : "Lax") as "None" | "Lax",
-  secure: isProd,
+  sameSite: "None" as const,
+  secure: true,
   maxAge: 60 * 60 * 24 * 30,
 };
 
