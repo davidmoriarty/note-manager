@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://github.com/davidmoriarty/note-manager.git"
   },
-  "homepage": "https://davidmoriarty.dev/projects/note-manager",
+  "homepage": "https://note-manager.davidmoriarty.dev",
   "license": "MIT",
   "engines": {
     "bun": ">=1.3.9"

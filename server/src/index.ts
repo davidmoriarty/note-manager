@@ -28,7 +28,7 @@ const refreshCookieOptions = {
 
 const allowedOrigins = [
   "http://localhost:5173",
-  process.env.CLIENT_ORIGIN, // e.g. https://note-manager.pages.dev
+  process.env.CLIENT_ORIGIN, // e.g. https://note-manager.davidmoriarty.dev
 ].filter(Boolean) as string[];
 
 export const app = new Hono()
