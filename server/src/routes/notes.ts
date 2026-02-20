@@ -1,5 +1,5 @@
 // server/src/routes/notes.ts
-import { authMiddleware } from "@server/lib/middleware/auth";
+import { authMiddleware } from "../lib/middleware/auth";
 import { Hono } from "hono";
 import { prisma } from "../lib/prisma";
 
