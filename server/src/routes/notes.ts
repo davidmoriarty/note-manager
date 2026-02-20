@@ -6,7 +6,7 @@ import { prisma } from "../lib/prisma";
 export const notesRoutes = new Hono()
 
   // GET all notes for logged-in user
-  .get("/notes", authMiddleware, async (c) => {
+  .get("/", authMiddleware, async (c) => {
     const userId = c.get("userId");
     console.time("fetch-notes");
     const notes = await prisma.note.findMany({
@@ -19,7 +19,7 @@ export const notesRoutes = new Hono()
   })
 
   // GET a single note by ID
-  .get("/notes/:id", authMiddleware, async (c) => {
+  .get("/:id", authMiddleware, async (c) => {
     const userId = c.get("userId");
     const id = Number(c.req.param("id"));
 
@@ -32,7 +32,7 @@ export const notesRoutes = new Hono()
   })
 
   // CREATE a new note
-  .post("/notes", authMiddleware, async (c) => {
+  .post("/", authMiddleware, async (c) => {
     const userId = c.get("userId");
     const { title, content } = await c.req.json();
     if (!title || !content) {
@@ -51,7 +51,7 @@ export const notesRoutes = new Hono()
   })
 
   // UPDATE a note
-  .put("/notes/:id", authMiddleware, async (c) => {
+  .put("/:id", authMiddleware, async (c) => {
     const userId = c.get("userId");
     const id = Number(c.req.param("id"));
     const { title, content, published } = await c.req.json();
@@ -74,7 +74,7 @@ export const notesRoutes = new Hono()
   })
 
   // DELETE a note
-  .delete("/notes/:id", authMiddleware, async (c) => {
+  .delete("/:id", authMiddleware, async (c) => {
     const userId = c.get("userId");
     const id = Number(c.req.param("id"));
 
