@@ -1,5 +1,6 @@
+// server/src/client.ts
 import { hc } from "hono/client";
-import type { app } from "./index";
+import type { app } from "./app";
 
 export type AppType = typeof app;
 export type Client = ReturnType<typeof hc<AppType>>;

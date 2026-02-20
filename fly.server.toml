@@ -5,21 +5,16 @@ primary_region = "yyz"
 [build]
 dockerfile = "server/Dockerfile"
 
-[processes]
-# If your build outputs server/dist/index.js (Node runtime)
-app = "sh -lc 'cd /app/server && bun run start'"
-
 [http_service]
 internal_port = 3000
 force_https = true
 auto_start_machines = true
 auto_stop_machines = "off"
 min_machines_running = 1
-processes = ["app"]
 
 [[http_service.checks]]
 interval = "15s"
 timeout = "5s"
 grace_period = "10s"
 method = "GET"
-path = "/hello"
+path = "/__info"

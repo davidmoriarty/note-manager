@@ -1,4 +1,5 @@
 // server/src/lib/auth/tokens.ts
+
 import { createHash, randomBytes } from "node:crypto";
 import { sign } from "jsonwebtoken";
 import { prisma } from "../prisma";
