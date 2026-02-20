@@ -4,9 +4,8 @@
 
 /* Theme imports */
 @import "@/styles/shadcn.css";
-@import "@/styles/base.css"; /* borders & focus rings */
-@import "@/styles/theme.css"; /* core theme variables */
-@import "@/styles/motion-tokens.css"; /* animation variables */
-@import "@/styles/animations.css"; /* keyframes & animation utilities */
+@import "@/styles/base.css";
+@import "@/styles/motion-tokens.css";
+@import "@/styles/animations.css";
 
 @custom-variant dark (&:where(.dark, .dark *));

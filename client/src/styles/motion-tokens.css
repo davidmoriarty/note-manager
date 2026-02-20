@@ -6,10 +6,10 @@
 /* -------------------------------------------------------------------------- */
 
 :root {
-	--anim-speed: 150ms;
-	--anim-distance: 16px;
-	--anim-ease: cubic-bezier(0.16, 0.1, 0.3, 1);
-	--anim-stagger-step: 20ms;
+  --anim-speed: 150ms;
+  --anim-distance: 16px;
+  --anim-ease: cubic-bezier(0.16, 0.1, 0.3, 1);
+  --anim-stagger-step: 20ms;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -18,12 +18,12 @@
 /* -------------------------------------------------------------------------- */
 
 .page-enter {
-	opacity: 0;
-	transform: translateY(var(--distance, var(--anim-distance)));
+  opacity: 0;
+  transform: translateY(var(--distance, var(--anim-distance)));
 
-	transition:
-		opacity var(--duration, var(--anim-speed)) var(--easing, var(--anim-ease)),
-		transform var(--duration, var(--anim-speed)) var(--easing, var(--anim-ease));
+  transition:
+    opacity var(--duration, var(--anim-speed)) var(--easing, var(--anim-ease)),
+    transform var(--duration, var(--anim-speed)) var(--easing, var(--anim-ease));
 }
 
 /* -------------------------------------------------------------------------- */
@@ -32,6 +32,6 @@
 /* -------------------------------------------------------------------------- */
 
 .page-enter-active {
-	opacity: 1;
-	transform: translateY(0);
+  opacity: 1;
+  transform: translateY(0);
 }

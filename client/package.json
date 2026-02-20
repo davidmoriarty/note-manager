@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "type-check": "tsc -b --pretty false",
+    "test": "echo \"no tests\"",
     "preview": "vite preview"
   },
   "dependencies": {

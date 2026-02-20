@@ -6,8 +6,10 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
+    "type-check": "tsc --noEmit",
+    "test": "echo \"no tests\"",
     "start": "bun dist/index.js",
-    "dev": "bun --watch src/dev.ts && tsc --watch"
+    "dev": "bun --watch src/dev.ts & tsc --watch"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.1.0",
