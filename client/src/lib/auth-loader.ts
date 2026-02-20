@@ -15,13 +15,22 @@ export async function AuthLoader() {
       credentials: "include",
     });
 
-    if (res.ok) {
-      const data = await res.json();
-      setAuthToken(data.token);
-      setToken(data.token);
-    } else {
+    // Silent "not logged in" path
+    if (res.status === 401) {
       setToken(null);
+      return;
     }
+
+    // Other failures: also just reset state (still no noise)
+    if (!res.ok) {
+      setToken(null);
+      return;
+    }
+
+    // Only parse JSON when we know it's OK
+    const { token } = (await res.json()) as { token: string };
+    setAuthToken(token);
+    setToken(token);
   })().finally(() => {
     refreshing = null;
   });

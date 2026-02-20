@@ -3,7 +3,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 import { setAuthToken, useAuth } from "./auth";
 
-let refreshingToken: Promise<string> | null = null;
+let refreshingToken: Promise<string | null> | null = null;
 
 export type Note = {
   id: number;
@@ -12,6 +12,23 @@ export type Note = {
   authorId: number;
   created_at?: number;
 };
+
+async function tryRefreshToken(): Promise<string | null> {
+  const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (!refreshRes.ok) {
+    // Silent on initial boot: no cookie / expired cookie is normal
+    useAuth.getState().setToken(null);
+    return null;
+  }
+
+  const { token: newToken } = (await refreshRes.json()) as { token: string };
+  setAuthToken(newToken);
+  return newToken;
+}
 
 /** Basic helper that automatically sends JSON and optional auth token */
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
@@ -27,9 +44,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   }
 
   // Add Authorization if we have a token
-  if (token) {
-    headersObj.Authorization = `Bearer ${token}`;
-  }
+  if (token) headersObj.Authorization = `Bearer ${token}`;
 
   let res = await fetch(`${API_URL}${path}`, {
     ...options,
@@ -41,25 +56,20 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     // Deduplicate multiple refreshes
     if (!refreshingToken) {
       refreshingToken = (async () => {
-        const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
-          method: "POST",
-          credentials: "include",
-        });
-
-        if (!refreshRes.ok) {
-          refreshingToken = null;
-          useAuth.getState().setToken(null);
-          throw new Error("Unauthorized");
-        }
-
-        const { token: newToken } = await refreshRes.json();
-        setAuthToken(newToken);
+        const newToken = await tryRefreshToken();
         refreshingToken = null;
         return newToken;
       })();
     }
 
     const newToken = await refreshingToken;
+
+    // If refresh failed, propagate the original 401 as a normal app-level unauthorized
+    if (!newToken) {
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || "Unauthorized");
+    }
+
     headersObj.Authorization = `Bearer ${newToken}`;
 
     // Retry original request with new token

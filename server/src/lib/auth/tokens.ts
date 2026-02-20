@@ -1,20 +1,16 @@
-// server/src/lib/authTokens.ts
+// server/src/lib/auth/tokens.ts
 import { createHash, randomBytes } from "node:crypto";
-import bcrypt from "bcrypt";
 import { sign } from "jsonwebtoken";
-import { prisma } from "./prisma";
+import { prisma } from "../prisma";
+import { REFRESH_EXPIRES_SECONDS } from "./cookie";
+import { type AccessTokenPayload, JWT_SECRET } from "./jwt";
+import { hashRefreshToken, verifySecret } from "./password";
 
-const ACCESS_SECRET = process.env.JWT_SECRET;
-if (!ACCESS_SECRET) {
-  throw new Error("JWT_SECRET is missing in environment variables.");
-}
-const ACCESS_SECRET_STRING: string = ACCESS_SECRET;
 const ACCESS_EXPIRES = "15m";
-const REFRESH_EXPIRES_DAYS = 30;
-const REFRESH_MS = REFRESH_EXPIRES_DAYS * 24 * 60 * 60 * 1000;
+const REFRESH_MS = REFRESH_EXPIRES_SECONDS * 1000;
 
-export function signAccessToken(payload: object) {
-  return sign(payload, ACCESS_SECRET_STRING, { expiresIn: ACCESS_EXPIRES });
+export function signAccessToken(payload: AccessTokenPayload) {
+  return sign(payload, JWT_SECRET, { expiresIn: ACCESS_EXPIRES });
 }
 
 function sha256Hex(input: string) {
@@ -23,7 +19,7 @@ function sha256Hex(input: string) {
 
 export async function createRefreshToken(userId: number) {
   const token = randomBytes(64).toString("hex");
-  const tokenHash = await bcrypt.hash(token, 10);
+  const tokenHash = await hashRefreshToken(token);
   const lookupHash = sha256Hex(token);
   const expiresAt = new Date(Date.now() + REFRESH_MS);
 
@@ -39,8 +35,8 @@ export async function createRefreshToken(userId: number) {
   return token;
 }
 
-export async function verifyRefreshToken(token: string) {
-  const lookupHash = sha256Hex(token);
+export async function verifyRefreshToken(rawToken: string) {
+  const lookupHash = sha256Hex(rawToken);
 
   const row = await prisma.refreshToken.findUnique({
     where: { lookupHash },
@@ -50,7 +46,7 @@ export async function verifyRefreshToken(token: string) {
     throw new Error("Invalid or expired refresh token");
   }
 
-  const ok = await bcrypt.compare(token, row.tokenHash);
+  const ok = await verifySecret(rawToken, row.tokenHash);
   if (!ok) throw new Error("Invalid or expired refresh token");
 
   return row;
