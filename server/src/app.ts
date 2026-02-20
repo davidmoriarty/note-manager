@@ -26,5 +26,5 @@ export const app = new Hono()
     }),
   )
   .route("/", metaRoutes)
-  .route("/user", authRoutes)
+  .route("/auth", authRoutes)
   .route("/notes", notesRoutes);
