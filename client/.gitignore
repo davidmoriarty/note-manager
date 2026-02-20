@@ -1,3 +1,29 @@
+# Dependencies
+node_modules/
+
+# Bun
+bun.lockb
+.turbo/
+*.tsbuildinfo
+
+# Build output
+dist/
+build/
+client/dist/
+
+*.tsbuildinfo
+dist-ssr
+dist-app
+*.local
+
+# Coverage
+coverage/
+
+# Env files
+.env
+.env.*
+!.env.example
+
 # Logs
 logs
 *.log
@@ -7,17 +33,14 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-dist-app
-*.local
+# OS
+.DS_Store
 
-# Editor directories and files
+# Editor
+.idea/
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+!.vscode/settings.json
 *.suo
 *.ntvs*
 *.njsproj
