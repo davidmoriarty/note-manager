@@ -22,7 +22,6 @@ function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("LOGIN handleSubmit fired", form);
 
     setErrors({ email: null, password: null, form: null });
 

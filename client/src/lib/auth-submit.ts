@@ -66,15 +66,11 @@ export const submitRegister: AuthSubmit<RegisterValues> = async (values) => {
 
 export const submitLogin: AuthSubmit<LoginValues> = async (values) => {
   try {
-    console.log("submitLogin: start", values);
-
     // Call backend login API
-    console.log("submitLogin: calling authApi.login");
     const res = await authApi.login({
       email: values.email.trim(),
       password: values.password.trim(),
     });
-    console.log("submitLogin: authApi.login.resolved", res);
 
     // IMPORTANT: persist token if provided
     const token = res.token ?? null;
@@ -102,8 +98,6 @@ export const submitLogin: AuthSubmit<LoginValues> = async (values) => {
         token,
       }),
     );
-
-    console.log("submitLogin: done ok");
     return { ok: true };
   } catch (err: unknown) {
     console.log("submitLogin: caught error", err);
