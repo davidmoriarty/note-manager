@@ -16,7 +16,7 @@ import { prisma } from "../lib/prisma";
 
 export const authRoutes = new Hono()
   // REGISTER
-  .post("/auth/register", async (c) => {
+  .post("/register", async (c) => {
     const { email, password, name } = await c.req.json();
     if (!email || !password) {
       return c.json({ error: "Email and password required" }, 400);
@@ -35,7 +35,7 @@ export const authRoutes = new Hono()
   })
 
   // LOGIN
-  .post("/auth/login", async (c) => {
+  .post("/login", async (c) => {
     const { email, password } = await c.req.json();
     if (!email || !password) {
       return c.json({ error: "Email and password required" }, 401);
@@ -59,7 +59,7 @@ export const authRoutes = new Hono()
   })
 
   // REFRESH
-  .post("/auth/refresh", async (c) => {
+  .post("/refresh", async (c) => {
     const refreshCookie = getCookie(c, "refresh");
 
     // Silent "not logged in" path
@@ -84,7 +84,7 @@ export const authRoutes = new Hono()
   })
 
   // LOGOUT
-  .post("/auth/logout", async (c) => {
+  .post("/logout", async (c) => {
     const refreshCookie = getCookie(c, "refresh");
 
     if (refreshCookie) {
