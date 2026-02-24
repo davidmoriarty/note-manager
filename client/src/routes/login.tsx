@@ -1,9 +1,10 @@
 // client/src/routes/login.tsx
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Container } from "@/components/layout/Container";
-import { Section } from "@/components/layout/Section";
 import { PageTransition } from "@/components/motion/PageTransition";
+import { SlideUp } from "@/components/motion/SlideUp";
+import { Section } from "@/components/layout/Section";
+import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -40,17 +41,18 @@ function LoginPage() {
   };
 
   return (
-    <PageTransition>
-      <Section
-        centered
-        className="min-h-[85vh] flex flex-col items-center justify-center"
-      >
-        <Container className="bg-gray-200 dark:bg-slate-800 rounded max-w-3xl px-6 py-12">
-          <div>
-            <h1 className="text-4xl mb-4">Sign in</h1>
-            <p className="max-w-[40ch] mx-auto">
-              Enter your email and password to access your account.
-            </p>
+    <PageTransition className="min-h-[90vh] flex flex-col items-center justify-center ">
+      <Section padding="py-16">
+        <Container className="max-w-xl">
+          <div className="mb-8 space-y-2">
+            <SlideUp delay={0}>
+              <h1 className="text-4xl mb-4">Sign in</h1>
+            </SlideUp>
+            <SlideUp delay={40}>
+              <p className="text-muted-foreground">
+                Enter your email and password to access your account.
+              </p>
+            </SlideUp>
           </div>
 
           <form onSubmit={handleSubmit}>

@@ -2,6 +2,7 @@
 import { Link } from "@tanstack/react-router";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { ModeToggle } from "@/components/mode-toggle";
+import { Container } from "@/components/layout/Container";
 import { useAuth } from "@/lib/auth";
 
 export function Header() {
@@ -10,8 +11,8 @@ export function Header() {
 
   return (
     <header className="sticky top-0 inset-x-0 z-40 bg-gray-50 dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700">
-      <div className="max-w-400 mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
+      <Container className="max-w-400 lg:px-8">
+        <div className="flex flex-row items-center justify-between py-4">
           <a href="/" className="text-lg font-black">
             Note Manager
           </a>
@@ -22,7 +23,7 @@ export function Header() {
             <ModeToggle />
           </nav>
         </div>
-      </div>
+      </Container>
     </header>
   );
 }

@@ -1,12 +1,13 @@
 // client/src/components/layout/Fooer.tsx
 import { ArrowUpIcon } from "lucide-react";
+import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 
 export function Footer() {
   return (
     <footer className="bg-gray-50 dark:bg-gray-900 border-t border-gray-300 dark:border-gray-700">
-      <div className="max-w-400 mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
+      <Container className="max-w-400 lg:px-8">
+        <div className="flex flex-row items-center justify-between py-4">
           <p>
             &copy; {new Date().getFullYear()} Note Manager. All rights reserved.
           </p>
@@ -22,7 +23,7 @@ export function Footer() {
             </a>
           </Button>
         </div>
-      </div>
+      </Container>
     </footer>
   );
 }

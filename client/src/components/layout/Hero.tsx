@@ -10,7 +10,7 @@ type Props = {
 
 export function Hero({ children, className = "" }: Props) {
   return (
-    <Section centered className={className}>
+    <Section className={className}>
       <Container>
         <h1 className="text-4xl md:text-5xl font-black">{children}</h1>
       </Container>

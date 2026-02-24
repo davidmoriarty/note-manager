@@ -173,7 +173,7 @@ export function NotesEditorUI({
             disabled={!isEditing}
             aria-label="Note content editor"
           />
-          <div className="border rounded p-4 w-full min-h-[60vh] overflow-auto text-sm">
+          <div className="border rounded p-4 w-full min-h-[60vh] overflow-auto prose dark:prose-invert">
             {outputFormat === "markdown" ? (
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {content}
@@ -190,15 +190,27 @@ export function NotesEditorUI({
             <Button
               onClick={handleSaveClick}
               variant="sky"
+              size="sm"
               disabled={!hasUnsavedChanges}
             >
               {isEditing ? "Save" : "Edit"}
             </Button>
 
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              onClick={() => onBack?.()}
+            >
+              Cancel
+            </Button>
+
             {!isNew && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive">Delete</Button>
+                  <Button variant="destructive" size="sm">
+                    Delete
+                  </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
@@ -213,15 +225,6 @@ export function NotesEditorUI({
                 </AlertDialogContent>
               </AlertDialog>
             )}
-
-            <Button
-              type="button"
-              variant="primary"
-              size="sm"
-              onClick={() => onBack?.()}
-            >
-              Back
-            </Button>
           </div>
 
           <Breadcrumb>

@@ -8,10 +8,14 @@ export const notesRoutes = new Hono()
   // GET all notes for logged-in user
   .get("/", authMiddleware, async (c) => {
     const userId = c.get("userId");
+
+    const sortOrder = c.req.query("order") === "asc" ? "asc" : "desc";
+
     console.time("fetch-notes");
     const notes = await prisma.note.findMany({
       where: { authorId: userId },
       include: { author: true },
+      orderBy: { createdAt: sortOrder },
     });
 
     console.timeEnd("fetch-notes");

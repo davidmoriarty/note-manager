@@ -40,7 +40,8 @@ const buttonVariants = cva(
 					"hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
 				link: "text-primary underline-offset-4 hover:underline",
 			},
-			size: {
+      size: {
+        xs: "h-6 rounded-md gap-1 px-2 has-[>svg]:px-1.75",
 				sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
 				md: "h-9 px-4 py-2 has-[>svg]:px-3",
 				lg: "h-10 rounded-md px-6 has-[>svg]:px-4",

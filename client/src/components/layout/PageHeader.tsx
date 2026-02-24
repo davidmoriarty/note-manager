@@ -8,6 +8,7 @@ type Props = {
   actions?: ReactNode;
   indicator?: ReactNode;
   className?: string;
+  children?: ReactNode;
 };
 
 export function PageHeader({
@@ -16,6 +17,7 @@ export function PageHeader({
   actions,
   indicator,
   className = "",
+  children,
 }: Props) {
   return (
     <section
@@ -27,23 +29,22 @@ export function PageHeader({
       >
         {title}
       </SlideUp>
-
       {subtitle && (
         <SlideUp
           delay={40}
-          className="max-w-[40ch] sm:max-w-[50ch] text-2xl font-medium text-center"
+          className="max-w-[40ch] sm:max-w-[50ch] text-2xl font-semibold text-left"
         >
           {subtitle}
         </SlideUp>
       )}
-
       {actions && <div className="flex flex-col gap-2 mt-4">{actions}</div>}
-
       {indicator && (
         <div className="absolute bottom-20 flex items-center justify-center">
           {indicator}
         </div>
       )}
+
+      {children}
     </section>
   );
 }

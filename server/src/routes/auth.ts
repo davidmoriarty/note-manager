@@ -13,6 +13,7 @@ import {
   verifyRefreshToken,
 } from "../lib/auth/tokens";
 import { prisma } from "../lib/prisma";
+import { authMiddleware } from "@server/lib/middleware/auth";
 
 export const authRoutes = new Hono()
   // REGISTER
@@ -56,6 +57,27 @@ export const authRoutes = new Hono()
       { id: user.id, email: user.email, name: user.name, token: accessToken },
       200,
     );
+  })
+
+  // ME
+  .get("/me", authMiddleware, async (c) => {
+    const userId = c.get("userId");
+
+    const user = await prisma.user.findFirst({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        _count: {
+          select: {
+            notes: true,
+          },
+        },
+      },
+    });
+
+    return c.json(user);
   })
 
   // REFRESH

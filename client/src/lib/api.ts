@@ -10,8 +10,19 @@ export type Note = {
   title: string;
   content: string;
   authorId: number;
-  created_at?: number;
+  createdAt?: string;
+  updatedAt?: string;
 };
+
+type RefreshJson = { token: string };
+function isRefreshJson(v: unknown): v is RefreshJson {
+  return (
+    typeof v === "object" &&
+    v !== null &&
+    "token" in v &&
+    typeof (v as Record<string, unknown>).token === "string"
+  );
+}
 
 async function tryRefreshToken(): Promise<string | null> {
   const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
@@ -25,7 +36,25 @@ async function tryRefreshToken(): Promise<string | null> {
     return null;
   }
 
-  const { token: newToken } = (await refreshRes.json()) as { token: string };
+  let data: unknown;
+  try {
+    data = await refreshRes.json();
+  } catch {
+    useAuth.getState().setToken(null);
+    return null;
+  }
+
+  if (!isRefreshJson(data)) {
+    useAuth.getState().setToken(null);
+    return null;
+  }
+
+  const newToken = data.token;
+  if (!newToken) {
+    useAuth.getState().setToken(null);
+    return null;
+  }
+
   setAuthToken(newToken);
   return newToken;
 }
@@ -104,11 +133,30 @@ export const authApi = {
         body: JSON.stringify(data),
       },
     ),
+
+  me: (data: {
+    id: number;
+    name: string;
+    email: string;
+    createdAt: string;
+    updatedAt: string;
+  }) =>
+    request<{
+      id: number;
+      name: string;
+      email: string;
+      createdAt: string;
+      updatedAt: string;
+    }>("/auth/me", {
+      method: "GET",
+      body: JSON.stringify(data),
+    }),
 };
 
 /** Notes API */
 export const notesApi = {
-  getAll: () => request<Note[]>("/notes"),
+  getAll: (order: "asc" | "desc" = "desc") =>
+    request<Note[]>(`/notes?order=${order}`),
   getOne: (id: number) => request<Note>(`/notes/${id}`),
   create: (data: { title: string; content: string }) =>
     request<Note>("/notes", {

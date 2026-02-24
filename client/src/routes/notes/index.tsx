@@ -1,12 +1,14 @@
 // client/src/routes/notes/index.tsx
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Section } from "@/components/layout/Section";
+import { ArrowDownAZ, ArrowUpAZ } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { SlideUp } from "@/components/motion/SlideUp";
+import { Section } from "@/components/layout/Section";
+import { Container } from "@/components/layout/Container";
 import { DeleteNoteDialog } from "@/components/notes/DeleteNoteDialog";
 import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
 import {
   Card,
   CardAction,
@@ -14,7 +16,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+  ButtonGroup,
+  ButtonGroupSeparator,
+} from "@/components/ui/button-group";
 import { LinkButton } from "@/components/ui/LinkButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toastMessage } from "@/components/ui/toast";
@@ -22,12 +30,15 @@ import { type Note, notesApi } from "@/lib/api";
 import { buildHead } from "@/lib/meta";
 import { requireAuth } from "@/lib/route-guard";
 
+const SKELETON_KEYS = Array.from({ length: 8 }, (_, i) => `skeleton-${i}`);
+
 function NotesOverviewPage() {
   const navigate = useNavigate();
 
   const [notes, setNotes] = useState<Note[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [noteToDelete, setNoteToDelete] = useState<number | null>(null);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   // Show toast for success query param
   useEffect(() => {
@@ -43,8 +54,10 @@ function NotesOverviewPage() {
   useEffect(() => {
     async function fetchNotes() {
       setIsLoading(true);
+
       try {
-        const fetched = await notesApi.getAll();
+        // Pass 'asc' for Old-New, or 'desc' for New-Old sorting
+        const fetched = await notesApi.getAll(sortOrder);
         setNotes(fetched);
       } catch (err) {
         console.error("Failed to fetch notes:", err);
@@ -55,7 +68,7 @@ function NotesOverviewPage() {
     }
 
     fetchNotes();
-  }, []);
+  }, [sortOrder]);
 
   const deleteNote = async (id: number) => {
     try {
@@ -69,104 +82,141 @@ function NotesOverviewPage() {
     }
   };
 
-  const formatDate = (ts: number) =>
-    new Date(ts * 1000).toLocaleDateString(undefined, {
+  const formatDate = (ts: string | Date) =>
+    new Date(ts).toLocaleDateString(undefined, {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
 
   const preview = (content: string) =>
-    content.length > 80 ? `${content.substring(0, 80)}...` : content;
+    content.length > 40 ? `${content.substring(0, 40)}...` : content;
 
   return (
     <PageTransition className="min-h-screen">
-      <Section centered className="py-20 gap-y-8">
-        <SlideUp
-          delay={0}
-          className="text-4xl md:text-5xl font-black text-center"
-        >
-          <h1>Notes Overview</h1>
-        </SlideUp>
+      <Section padding="py-16">
+        <Container className="max-w-400">
+          <div className="flex flex-row items-center justify-between border-b border-border px-4 pb-8 mb-6">
+            <div className="space-y-2">
+              <SlideUp delay={0}>
+                <h1 className="text-4xl font-black tracking-tight">
+                  Notes Overview
+                </h1>
+              </SlideUp>
 
-        <SlideUp delay={40} className="text-lg text-center">
-          All your notes in one place. Quickly browse, edit, or create new
-          notes.
-        </SlideUp>
+              <SlideUp delay={40}>
+                <p className="text-muted-foreground">
+                  All your notes in one place. Quickly browse, edit, or create
+                  new notes.
+                </p>
+              </SlideUp>
+            </div>
 
-        <SlideUp delay={80}>
-          <LinkButton to="/notes/editor" variant="primary" size="lg">
-            + New Note
-          </LinkButton>
-        </SlideUp>
-      </Section>
+            <SlideUp delay={80}>
+              <LinkButton to="/notes/editor" variant="primary" size="md">
+                + New Note
+              </LinkButton>
+            </SlideUp>
+          </div>
 
-      <Section centered className="container mx-auto p-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {isLoading
-            ? Array.from({ length: Math.max(notes.length, 8) }).map(() => {
-                const key = crypto.randomUUID(); // unique key
-                return (
-                  <div
-                    key={key}
-                    className="flex flex-col justify-between h-full border rounded-md p-4"
-                  >
-                    <Skeleton className="h-6 w-3/4 mb-2" />
-                    <Skeleton className="h-4 w-full mb-1" />
-                    <Skeleton className="h-4 w-5/6 mb-1" />
-                    <Skeleton className="h-4 w-2/3" />
-                    <div className="mt-4 flex gap-2">
-                      <Skeleton className="h-8 w-16 rounded" />
-                      <Skeleton className="h-8 w-16 rounded" />
+          <div className="flex flex-col gap-3 px-4">
+            {/*Notes sorting toggles*/}
+            <ToggleGroup
+              type="single"
+              defaultValue="desc"
+              onValueChange={(value) =>
+                value && setSortOrder(value as "asc" | "desc")
+              }
+              className="ml-auto mb-2"
+            >
+              <ToggleGroupItem
+                value="desc"
+                aria-label="Newest First"
+                className="bg-secondary text-background"
+              >
+                <ArrowDownAZ />
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="asc"
+                aria-label="Oldest First"
+                className="bg-secondary text-background"
+              >
+                <ArrowUpAZ />
+              </ToggleGroupItem>
+            </ToggleGroup>
+
+            {/* Notes Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
+              {isLoading
+                ? SKELETON_KEYS.map((key) => (
+                    <div
+                      key={key}
+                      className="flex flex-col justify-between h-full border rounded-md p-4"
+                    >
+                      <Skeleton className="h-6 w-3/4 mb-2" />
+                      <Skeleton className="h-4 w-full mb-1" />
+                      <Skeleton className="h-4 w-5/6 mb-1" />
+                      <Skeleton className="h-4 w-2/3" />
+                      <div className="mt-4 flex gap-2">
+                        <Skeleton className="h-8 w-16 rounded" />
+                        <Skeleton className="h-8 w-16 rounded" />
+                      </div>
                     </div>
-                  </div>
-                );
-              })
-            : notes.map((note) => (
-                <Card
-                  key={note.id}
-                  className="flex flex-col justify-between h-full"
-                >
-                  <CardHeader>
-                    <CardTitle>{note.title || "Untitled Note"}</CardTitle>
-                    {note.created_at && (
-                      <CardDescription>
-                        {formatDate(note.created_at)}
-                      </CardDescription>
-                    )}
-                  </CardHeader>
-
-                  <CardContent>{preview(note.content || "")}</CardContent>
-
-                  <CardAction className="px-5">
-                    <ButtonGroup className="gap-1">
-                      {/* SAVE / EDIT Button */}
-                      <Button
-                        variant="sky"
-                        size="sm"
-                        onClick={() => {
-                          navigate({
-                            to: `/notes/viewer/${note.id}`,
-                            params: { noteId: String(note.id) },
-                          });
-                        }}
-                      >
-                        View
-                      </Button>
-                      {/* DELETE NOTE Dialog */}
-                      <DeleteNoteDialog
-                        noteId={note.id}
-                        open={noteToDelete === note.id}
-                        onOpenChange={(open) =>
-                          setNoteToDelete(open ? note.id : null)
-                        }
-                        onDelete={deleteNote}
-                      />
-                    </ButtonGroup>
-                  </CardAction>
-                </Card>
-              ))}
-        </div>
+                  ))
+                : notes.map((note) => (
+                    <Card
+                      key={note.id}
+                      className="flex flex-col justify-between pt-4"
+                    >
+                      <CardHeader>
+                        <CardTitle className="prose-lg dark:prose-invert">
+                          {note.title || "Untitled Note"}
+                        </CardTitle>
+                        {note.createdAt && (
+                          <CardDescription className="prose dark:prose-invert">
+                            {formatDate(note.createdAt)}
+                          </CardDescription>
+                        )}
+                      </CardHeader>
+                      <CardContent className="font-normal font-sm">
+                        <ReactMarkdown>
+                          {preview(note.content || "")}
+                        </ReactMarkdown>
+                      </CardContent>
+                      <CardFooter>
+                        <CardAction>
+                          <ButtonGroup>
+                            {/* SAVE / EDIT Button */}
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              onClick={() => {
+                                navigate({
+                                  to: `/notes/viewer/${note.id}`,
+                                  params: { noteId: String(note.id) },
+                                });
+                              }}
+                            >
+                              View
+                            </Button>
+                            <ButtonGroupSeparator />
+                            {/* DELETE NOTE Dialog */}
+                            <DeleteNoteDialog
+                              noteId={note.id}
+                              open={noteToDelete === note.id}
+                              onOpenChange={(open) =>
+                                setNoteToDelete(open ? note.id : null)
+                              }
+                              onDelete={deleteNote}
+                            />
+                          </ButtonGroup>
+                        </CardAction>
+                      </CardFooter>
+                    </Card>
+                  ))}
+            </div>
+          </div>
+        </Container>
       </Section>
     </PageTransition>
   );

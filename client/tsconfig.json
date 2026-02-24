@@ -10,6 +10,6 @@
     "allowJs": false,
     "noEmit": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "test"],
   "references": [{ "path": "../shared" }]
 }

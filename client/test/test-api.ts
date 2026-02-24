@@ -1,28 +1,28 @@
-// test-api.ts
-import { authApi, notesApi } from "./lib/api";
-
-// Temporary helper to set token for requests
-let token: string | null = null;
-function setAuthToken(newToken: string | null) {
-  token = newToken;
-}
-
-// Override fetch in api.ts if needed (or modify api.ts to accept a token param)
-// Or you can directly call endpoints with fetch for testing
+// client/test/test-api.ts
+import "./setup-localstorage";
 
 async function runTests() {
   try {
+    const { authApi, notesApi } = await import("../src/lib/api");
+    const { setAuthToken } = await import("../src/lib/auth");
+
+    const email = process.env.TEST_EMAIL ?? "";
+    const password = process.env.TEST_PASSWORD ?? "";
+    if (!email || !password) {
+      throw new Error(
+        "Set TEST_EMAIL and TEST_PASSWORD env vars before running.",
+      );
+    }
+
     // --- Auth: register/login ---
     console.log("Logging in...");
     const loginRes = await authApi.login({
-      email: "dmrty@icloud.com",
-      password: "yourpassword",
+      email,
+      password,
     });
     console.log("Login response:", loginRes);
 
-    // Optionally set token for notesApi
-    token = loginRes.token ?? null;
-    setAuthToken(token);
+    setAuthToken(loginRes.token ?? null);
 
     // --- Notes API tests ---
     console.log("Fetching all notes...");

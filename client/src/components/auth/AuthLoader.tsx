@@ -36,7 +36,7 @@ export function AuthLoader({ children }: { children: ReactNode }) {
 
   if (!ready)
     return (
-      <Section centered>
+      <Section>
         <Container className="max-w-2xl">
           <div className="p-4">Loading...</div>
         </Container>

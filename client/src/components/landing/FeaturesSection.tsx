@@ -1,5 +1,6 @@
 // client/src/components/landing/FeaturesSection.tsx
 import { SlideUp } from "@/components/motion/SlideUp";
+import { Container } from "@/components/layout/Container";
 
 export function FeaturesSection() {
   const items = [
@@ -18,19 +19,23 @@ export function FeaturesSection() {
   ];
 
   return (
-    <section
-      id="features-section"
-      className="bg-accent text-foreground w-full py-32 px-8"
-    >
-      <div className="container mx-auto flex flex-col gap-y-16">
-        <SlideUp delay={0} className="text-center">
-          <h2 className="text-4xl font-bold tracking-tight">What, Why & How</h2>
-          <p className="mt-2 text-lg">
-            A quick overview of the purpose and design behind the project.
-          </p>
-        </SlideUp>
+    <section id="features-section" className="bg-muted text-foreground py-24">
+      <Container className="max-w-7xl">
+        <div className="flex flex-col gap-4 mb-16 text-center">
+          <SlideUp delay={0}>
+            <h2 className="text-3xl font-semibold tracking-tight">
+              What, Why & How
+            </h2>
+          </SlideUp>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <SlideUp delay={40}>
+            <p className="text-muted-foreground">
+              A quick overview of the purpose and design behind the project.
+            </p>
+          </SlideUp>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-20">
           {items.map((item, i) => (
             <SlideUp key={item.title} delay={80 * (i + 1)}>
               <div className="flex flex-col items-start gap-y-3">
@@ -42,7 +47,7 @@ export function FeaturesSection() {
             </SlideUp>
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

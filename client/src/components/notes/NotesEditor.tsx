@@ -10,12 +10,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { toastMessage } from "@/components/ui/toast";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroupTextarea,
-} from "../ui/input-group";
+import { InputGroup, InputGroupTextarea } from "@/components/ui/input-group";
 
 type NotesEditorProps = {
   note?: { title?: string; content?: string } | null;
@@ -27,9 +22,17 @@ type NotesEditorProps = {
   onBack?: () => void;
 };
 
+const handleCopy = (text: string) => {
+  if (!text) return;
+  navigator.clipboard.writeText(text);
+  toastMessage("success", "Copied to clipboard!");
+};
+
+const MAX_CHARS = 2000;
+
 const noteFormSchema = z.object({
-  title: z.string().nonempty("Title cannot be empty"),
-  content: z.string().nonempty("Content cannot be empty"),
+  title: z.string().min(1, "Title is required").max(100),
+  content: z.string().min(1, "Content is required").max(MAX_CHARS),
 });
 
 export function NotesEditor({
@@ -52,6 +55,7 @@ export function NotesEditor({
     onSubmit: async ({ value }) => {
       try {
         await onSave(value.title, value.content);
+
         toastMessage("success", isNew ? "Note Created!" : "Note updated!");
       } catch (_err) {
         toastMessage(
@@ -89,7 +93,7 @@ export function NotesEditor({
                   placeholder="Untitled Note"
                   aria-invalid={isInvalid}
                   autoComplete="off"
-                  className="bg-white dark:bg-gray-300"
+                  className="bg-gray-50 dark:bg-gray-600 placeholder:text-muted-foreground placeholder:text-base placeholder:italic"
                 />
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
@@ -101,10 +105,17 @@ export function NotesEditor({
           {(field) => {
             const isInvalid =
               !field.state.meta.isValid && field.state.meta.isTouched;
+            const isDirty = field.state.meta.isPristine === false;
+            const charCount = field.state.value.length / MAX_CHARS;
+            const wordCount = field.state.value
+              .trim()
+              .split(/\s+/)
+              .filter(Boolean).length;
+
             return (
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Note Content</FieldLabel>
-                <InputGroup>
+                <InputGroup className="flex flex-col border rounded-md overflow-hidden bg-white dark:bg-gray-600 focus-within:ring-2 focus-within:ring-primary/20">
                   <InputGroupTextarea
                     id={field.name}
                     name={field.name}
@@ -114,16 +125,64 @@ export function NotesEditor({
                       field.handleChange(e.target.value);
                       onContentChange?.(e.target.value);
                     }}
-                    rows={40}
-                    placeholder="Note..."
-                    className="bg-white dark:bg-gray-300 min-h-[30ch] border rounded resize-none"
+                    rows={25}
+                    className="bg-gray-50 dark:bg-gray-600 text-base min-h-[40ch] border rounded resize-none placeholder:text-muted-foreground placeholder:text-base placeholder:italic"
+                    placeholder="Untitled note content"
                     aria-invalid={isInvalid}
                   />
-                  <InputGroupAddon align="block-end">
-                    <InputGroupText className="tabular-nums">
-                      {field.state.value.length}/100 characters
-                    </InputGroupText>
-                  </InputGroupAddon>
+
+                  {/* THE INFO PANEL / STATUS BAR */}
+                  <div className="w-full flex items-center justify-between px-3 py-1.5 bg-gray-200 dark:bg-gray-700 border border-t-0 rounded-b-md text-[10px] uppercase tracking-wider font-medium text-muted-foreground tabular-nums">
+                    <div className="flex items-center gap-4">
+                      {/* STATUS INDICATOR */}
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          className={`h-2 w-2 rounded-full animate-pulse ${isDirty ? "bg-amber-500" : "bg-emerald-500"}`}
+                        />
+                        {isDirty ? "Unsaved Changes" : "Synced"}
+                      </div>
+                      <span>Words: {wordCount}</span>
+                      <span>Chars: {charCount}</span>
+                    </div>
+
+                    <div className="flex gap-4 items-center">
+                      <span className="hidden md:inline-block">
+                        Markdown Mode
+                      </span>
+
+                      {/* COPY BUTTON */}
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(field.state.value)}
+                        className="flex items-center gap-1 hover:text-primary transition-colors uppercase"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org"
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <title>Copy icon</title>
+                          <rect
+                            width="14"
+                            height="14"
+                            x="8"
+                            y="8"
+                            rx="2"
+                            ry="2"
+                          />
+                          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                        </svg>
+                        Copy
+                      </button>
+                      <span>UTF-8</span>
+                    </div>
+                  </div>
                 </InputGroup>
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
@@ -134,15 +193,24 @@ export function NotesEditor({
 
       <FieldGroup className="pt-8">
         <Field orientation="horizontal">
-          <Button type="submit" variant="sky" size="md">
-            Save
+          <Button type="submit" variant="primary" size="sm">
+            {isNew ? "Create Note" : "Save Changes"}
+          </Button>
+
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={() => onBack?.()}
+          >
+            Cancel
           </Button>
 
           {!isNew && onDelete && (
             <Button
               type="button"
               variant="destructive"
-              size="md"
+              size="sm"
               onClick={async () => {
                 try {
                   await onDelete();
@@ -155,15 +223,6 @@ export function NotesEditor({
               Delete
             </Button>
           )}
-
-          <Button
-            type="button"
-            variant="primary"
-            size="md"
-            onClick={() => onBack?.()}
-          >
-            Back
-          </Button>
         </Field>
       </FieldGroup>
     </form>

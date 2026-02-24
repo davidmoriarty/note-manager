@@ -5,15 +5,17 @@ type LinkButtonProps = {
 	variant: any;
 	size: any;
 	className?: string;
-	to: string;
+  to: string;
+	params?: Record<string, string>;
 	children: string;
 };
 
 export function LinkButton({
 	variant,
 	size,
-	className,
-	to,
+	className = "no-underline",
+  to,
+	params,
 	children,
 }: LinkButtonProps) {
 	return (

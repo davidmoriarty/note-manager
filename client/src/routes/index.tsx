@@ -14,7 +14,7 @@ function LandingPage() {
         title="Notes App"
         subtitle="The note app you never knew you needed! Say hello to your new note-taking companion — and goodbye to lost ideas."
         actions={
-          <LinkButton to="/login" variant="primary" size="lg">
+          <LinkButton to="/notes" variant="primary" size="lg">
             Get Started!
           </LinkButton>
         }

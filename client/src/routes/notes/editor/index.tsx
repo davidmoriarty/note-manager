@@ -1,11 +1,13 @@
 // client/src/routes/notes/editor/index.tsx
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Section } from "@/components/layout/Section";
 import { PageTransition } from "@/components/motion/PageTransition";
+import { Section } from "@/components/layout/Section";
+import { Container } from "@/components/layout/Container";
 import { NotesEditor } from "@/components/notes/NotesEditor";
 import { NotesPreview } from "@/components/notes/NotesPreview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SlideUp } from "@/components/motion/SlideUp";
 import { notesApi } from "@/lib/api";
 import { buildHead } from "@/lib/meta";
 import { requireAuth } from "@/lib/route-guard";
@@ -24,35 +26,59 @@ function NewNotePage() {
 
   return (
     <PageTransition>
-      <Section centered className="max-w-7xl mx-auto min-h-[85vh] p-8">
-        <Tabs
-          value={tab}
-          onValueChange={setTab}
-          className="min-h-[65vh] bg-gray-200 dark:bg-gray-700 w-full rounded px-12 pt-8 space-y-4"
-        >
-          <TabsList className="w-full">
-            <TabsTrigger value="editor">Editor</TabsTrigger>
-            <TabsTrigger value="preview">Preview</TabsTrigger>
-          </TabsList>
+      <Section padding="py-16">
+        <Container className="max-w-4xl">
+          <div className="mb-8 space-y-2">
+            <SlideUp delay={0}>
+              <h1 className="text-4xl font-black tracking-tight">
+                Create Note
+              </h1>
+            </SlideUp>
+            <SlideUp delay={40}>
+              <p className="text-muted-foreground">
+                Draft your thoughts. Markdown is supported and autosaved
+                locally.
+              </p>
+            </SlideUp>
+          </div>
 
-          <TabsContent value="editor">
-            <NotesEditor
-              isNew
-              onSave={handleSave}
-              onTitleChange={setTitle}
-              onContentChange={setContent}
-              onBack={() =>
-                navigate({
-                  to: "/notes",
-                })
-              }
-            />
-          </TabsContent>
+          <div className="flex flex-col items-center justify-center">
+            <Tabs
+              value={tab}
+              onValueChange={setTab}
+              className="min-h-[75vh] bg-gray-100 dark:bg-gray-700 w-full rounded border-2 border-gray-100/50 dark:border-gray-700/50"
+            >
+              <TabsList className="w-full">
+                <TabsTrigger value="editor">Editor</TabsTrigger>
+                <TabsTrigger value="preview">Preview</TabsTrigger>
+              </TabsList>
 
-          <TabsContent value="preview">
-            <NotesPreview title={title} content={content} />
-          </TabsContent>
-        </Tabs>
+              <TabsContent
+                value="editor"
+                className="w-full mx-auto p-8 text-left prose dark:prose-invert"
+              >
+                <NotesEditor
+                  isNew
+                  onSave={handleSave}
+                  onTitleChange={setTitle}
+                  onContentChange={setContent}
+                  onBack={() =>
+                    navigate({
+                      to: "/notes",
+                    })
+                  }
+                />
+              </TabsContent>
+
+              <TabsContent
+                value="preview"
+                className="w-full mx-auto p-8 text-left prose dark:prose-invert"
+              >
+                <NotesPreview title={title} content={content} />
+              </TabsContent>
+            </Tabs>
+          </div>
+        </Container>
       </Section>
     </PageTransition>
   );

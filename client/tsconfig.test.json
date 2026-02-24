@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.app.json",
+  "files": ["src/vite-env.d.ts"],
+  "include": ["test/**/*.ts", "test/**/*.tsx"],
+  "exclude": [],
+  "compilerOptions": {
+    "noEmit": true
+  }
+}

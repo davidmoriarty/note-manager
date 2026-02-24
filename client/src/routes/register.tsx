@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
 import { PageTransition } from "@/components/motion/PageTransition";
+import { SlideUp } from "@/components/motion/SlideUp";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -45,18 +46,19 @@ function RegisterPage() {
   };
 
   return (
-    <PageTransition>
-      <Section
-        centered
-        className="min-h-[80vh] flex flex-col items-center justify-center"
-      >
-        <Container className="bg-gray-200 dark:bg-slate-800 rounded max-w-3xl px-6 py-8">
-          <div>
-            <h1 className="text-4xl mb-4">Sign up</h1>
-            <p className="max-w-[40ch] mx-auto">
-              An account allows you to use the notes services. Creating an
-              account is required.
-            </p>
+    <PageTransition className="min-h-[90vh] flex flex-col items-center justify-center ">
+      <Section padding="py-16">
+        <Container className="max-w-xl">
+          <div className="mb-8 space-y-2">
+            <SlideUp delay={0}>
+              <h1 className="text-4xl mb-4">Sign up</h1>
+            </SlideUp>
+            <SlideUp delay={40}>
+              <p className="text-muted-foreground">
+                An account allows you to use the notes services. Creating an
+                account is required.
+              </p>
+            </SlideUp>
           </div>
 
           <form onSubmit={handleSubmit}>

@@ -1,12 +1,13 @@
 // client/src/routes/notes/editor/$noteId.tsx
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Container } from "@/components/layout/Container";
-import { Section } from "@/components/layout/Section";
 import { PageTransition } from "@/components/motion/PageTransition";
+import { Section } from "@/components/layout/Section";
+import { Container } from "@/components/layout/Container";
 import { NotesEditor } from "@/components/notes/NotesEditor";
 import { NotesPreview } from "@/components/notes/NotesPreview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SlideUp } from "@/components/motion/SlideUp";
 import { notesApi } from "@/lib/api";
 import { buildHead } from "@/lib/meta";
 import { requireAuth } from "@/lib/route-guard";
@@ -46,41 +47,61 @@ function NoteEditorPage() {
   };
 
   return (
-    <PageTransition className="h-screen p-0">
-      <Section centered className="h-274 p-0">
-        <Container className="h-200 p-8">
-          <Tabs
-            value={tab}
-            onValueChange={setTab}
-            className="bg-gray-50 rounded border min-h-full w-full mx-auto p-8 space-y-4"
-          >
-            <TabsList>
-              <TabsTrigger value="editor">Editor</TabsTrigger>
-              <TabsTrigger value="preview">Preview</TabsTrigger>
-            </TabsList>
+    <PageTransition>
+      <Section padding="py-16">
+        <Container className="max-w-4xl">
+          <div className="mb-8 space-y-2">
+            <SlideUp delay={0}>
+              <h1 className="text-4xl font-black tracking-tight">Edit Note</h1>
+            </SlideUp>
+            <SlideUp delay={40}>
+              <p className="text-muted-foreground">
+                Make changes to your note. Markdown is supported and autosaved
+                locally.
+              </p>
+            </SlideUp>
+          </div>
 
-            <TabsContent value="editor">
-              <NotesEditor
-                note={note}
-                onSave={handleSave}
-                onDelete={handleDelete}
-                onBack={() =>
-                  navigate({
-                    to: "/notes/viewer/$noteId",
-                    params: { noteId },
-                  })
-                }
-                onTitleChange={(t) =>
-                  setNote((prev) => (prev ? { ...prev, title: t } : prev))
-                }
-                onContentChange={setContent}
-              />
-            </TabsContent>
+          <div className="flex flex-col items-center justify-center">
+            <Tabs
+              value={tab}
+              onValueChange={setTab}
+              className="min-h-[75vh] bg-gray-100 dark:bg-gray-700 w-full rounded border-2 border-gray-100/50 dark:border-gray-700/50"
+            >
+              <TabsList className="w-full">
+                <TabsTrigger value="editor">Editor</TabsTrigger>
+                <TabsTrigger value="preview">Preview</TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="preview">
-              <NotesPreview title={previewTitle} content={content} />
-            </TabsContent>
-          </Tabs>
+              <TabsContent
+                value="editor"
+                className="w-full mx-auto p-8 text-left prose dark:prose-invert"
+              >
+                <NotesEditor
+                  note={note}
+                  onSave={handleSave}
+                  onDelete={handleDelete}
+                  onBack={() =>
+                    navigate({
+                      to: "/notes/viewer/$noteId",
+                      params: { noteId },
+                    })
+                  }
+                  onTitleChange={(t) =>
+                    setNote((prev) => (prev ? { ...prev, title: t } : prev))
+                  }
+                  onContentChange={setContent}
+                />
+              </TabsContent>
+
+              <TabsContent
+                value="preview"
+                className="w-full mx-auto p-8 text-left prose dark:prose-invert"
+              >
+                <NotesPreview title={previewTitle} content={content} />
+              </TabsContent>
+            </Tabs>
+          </div>
         </Container>
       </Section>
     </PageTransition>
