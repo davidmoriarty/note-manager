@@ -13,7 +13,7 @@ import {
   verifyRefreshToken,
 } from "../lib/auth/tokens";
 import { prisma } from "../lib/prisma";
-import { authMiddleware } from "@server/lib/middleware/auth";
+import { authMiddleware } from "../lib/middleware/auth";
 
 export const authRoutes = new Hono()
   // REGISTER
