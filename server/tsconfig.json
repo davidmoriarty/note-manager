@@ -3,8 +3,8 @@
   "compilerOptions": {
     "composite": true,
     "declaration": true,
-    "outDir": "dist",
     "rootDir": "src",
+    "outDir": "dist",
     "allowJs": false,
     "types": ["bun-types"],
     "noEmit": false,
