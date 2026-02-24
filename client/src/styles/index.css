@@ -10,3 +10,14 @@
 
 @plugin "@tailwindcss/typography";
 @custom-variant dark (&:where(.dark, .dark *));
+
+.prose pre {
+  background: transparent;
+  padding: 0;
+}
+
+.prose pre code.hljs {
+  display: block;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}

@@ -20,6 +20,30 @@ const initialState: ThemeProviderState = {
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
+function resolveTheme(theme: Theme): "dark" | "light" {
+  if (theme !== "system") return theme;
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
+
+function syncHighlightTheme(resolved: "dark" | "light") {
+  const id = "hljs-theme";
+  const href =
+    resolved === "dark" ? "/hljs/github-dark.css" : "/hljs/github.css";
+
+  let link = document.querySelector<HTMLLinkElement>(`link#${id}`);
+  if (!link) {
+    link = document.createElement("link");
+    link.id = id;
+    link.rel = "stylesheet";
+    document.head.appendChild(link);
+  }
+
+  const absolute = new URL(href, window.location.origin).href;
+  if (link.href !== absolute) link.href = href;
+}
+
 export function ThemeProvider({
   children,
   defaultTheme = "system",
@@ -33,19 +57,24 @@ export function ThemeProvider({
   useEffect(() => {
     const root = window.document.documentElement;
 
-    root.classList.remove("light", "dark");
+    const apply = () => {
+      const resolved = resolveTheme(theme);
 
+      root.classList.remove("light", "dark");
+      root.classList.add(resolved);
+
+      syncHighlightTheme(resolved);
+    };
+
+    apply();
+
+    // When theme === "system", keep in sync with OS changes
     if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-
-      root.classList.add(systemTheme);
-      return;
+      const mq = window.matchMedia("(prefers-color-scheme: dark)");
+      const handler = () => apply();
+      mq.addEventListener?.("change", handler);
+      return () => mq.removeEventListener?.("change", handler);
     }
-
-    root.classList.add(theme);
   }, [theme]);
 
   const value = {

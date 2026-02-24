@@ -1,7 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
-import { useTheme } from "next-themes";
-import { StrictMode, useEffect } from "react";
+import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import "@/styles/index.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -20,26 +19,6 @@ declare module "@tanstack/react-router" {
   }
 }
 
-function ThemeColorSync() {
-  const { resolvedTheme } = useTheme();
-
-  useEffect(() => {
-    const meta =
-      document.querySelector<HTMLMetaElement>('meta[name="theme-color"]') ??
-      (() => {
-        const m = document.createElement("meta");
-        m.name = "theme-color";
-        document.head.appendChild(m);
-        return m;
-      })();
-
-    const isDark = resolvedTheme === "dark";
-    meta.content = isDark ? "#111827" : "#f9fafb";
-  }, [resolvedTheme]);
-
-  return null;
-}
-
 const rootElement = document.getElementById("root");
 if (!rootElement) {
   throw new Error(
@@ -54,7 +33,6 @@ if (!rootElement.innerHTML) {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-          <ThemeColorSync />
           <RouterProvider router={router} />
         </ThemeProvider>
       </QueryClientProvider>

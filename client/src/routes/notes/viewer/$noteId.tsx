@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { Section } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
@@ -88,7 +89,10 @@ function NotesViewerPage() {
               {!note || isLoading ? (
                 <Skeleton className="h-8 w-3/4 animate-pulse" />
               ) : (
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeHighlight]}
+                >
                   {note.title}
                 </ReactMarkdown>
               )}
@@ -116,8 +120,11 @@ function NotesViewerPage() {
                   </div>
                 </div>
               ) : (
-                <div className="text-left prose dark:prose-invert">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                <div className="text-left prose-sm dark:prose-invert max-w-none">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeHighlight]}
+                  >
                     {previewContent()}
                   </ReactMarkdown>
                 </div>
@@ -134,7 +141,6 @@ function NotesViewerPage() {
                 {note && !isLoading && (
                   <>
                     <ButtonGroupSeparator />
-
                     <LinkButton
                       to="/notes/editor/$noteId"
                       params={{ noteId: String(note.id) }}

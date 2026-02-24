@@ -3,6 +3,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowDownAZ, ArrowUpAZ } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { SlideUp } from "@/components/motion/SlideUp";
 import { Section } from "@/components/layout/Section";
@@ -179,7 +181,10 @@ function NotesOverviewPage() {
                         )}
                       </CardHeader>
                       <CardContent className="font-normal font-sm">
-                        <ReactMarkdown>
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          rehypePlugins={[rehypeHighlight]}
+                        >
                           {preview(note.content || "")}
                         </ReactMarkdown>
                       </CardContent>
