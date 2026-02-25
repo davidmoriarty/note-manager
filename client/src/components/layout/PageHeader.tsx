@@ -25,21 +25,21 @@ export function PageHeader({
     >
       <SlideUp
         delay={0}
-        className="text-6xl font-black tracking-tight leading-relaxed text-center"
+        className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-center"
       >
         {title}
       </SlideUp>
       {subtitle && (
         <SlideUp
           delay={40}
-          className="max-w-[40ch] sm:max-w-[50ch] text-2xl font-semibold text-left"
+          className="max-w-[40ch] sm:max-w-[50ch] font-base text-center"
         >
           {subtitle}
         </SlideUp>
       )}
       {actions && <div className="flex flex-col gap-2 mt-4">{actions}</div>}
       {indicator && (
-        <div className="absolute bottom-20 flex items-center justify-center">
+        <div className="absolute bottom-4 flex items-center justify-center">
           {indicator}
         </div>
       )}

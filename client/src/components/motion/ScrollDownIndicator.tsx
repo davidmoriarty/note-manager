@@ -8,7 +8,7 @@ export function ScrollDownIndicator() {
       initial={{ opacity: 0, y: -4 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 3.0, repeat: Infinity, repeatType: "reverse" }}
-      className="absolute bottom-12 left-1/2 -translate-x-1/2 cursor-pointer select-none"
+      className="absolute bottom-4 left-1/2 -translate-x-1/2 cursor-pointer select-none"
       onClick={() => {
         const el = document.getElementById("features-section");
         if (el) el.scrollIntoView({ behavior: "smooth" });
