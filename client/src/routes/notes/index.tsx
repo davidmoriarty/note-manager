@@ -98,7 +98,7 @@ function NotesOverviewPage() {
     <PageTransition className="min-h-screen">
       <Section padding="py-16">
         <Container className="max-w-400">
-          <div className="flex flex-row items-center justify-between border-b border-border px-4 pb-8 mb-6">
+          <div className="flex flex-row flex-wrap items-center justify-between gap-6 border-b border-border px-4 pb-8 mb-6">
             <div className="space-y-2">
               <SlideUp delay={0}>
                 <h1 className="text-4xl font-black tracking-tight">

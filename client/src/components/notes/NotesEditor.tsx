@@ -106,7 +106,7 @@ export function NotesEditor({
             const isInvalid =
               !field.state.meta.isValid && field.state.meta.isTouched;
             const isDirty = field.state.meta.isPristine === false;
-            const charCount = field.state.value.length / MAX_CHARS;
+            const charCount = field.state.value.length;
             const wordCount = field.state.value
               .trim()
               .split(/\s+/)
@@ -114,7 +114,35 @@ export function NotesEditor({
 
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Note Content</FieldLabel>
+                <FieldLabel
+                  htmlFor={field.name}
+                  className="flex items-center justify-between"
+                >
+                  <span>Note Content</span>
+                  {/* COPY BUTTON */}
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(field.state.value)}
+                    className="flex items-center gap-1 hover:text-primary transition-colors uppercase"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org"
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <title>Copy icon</title>
+                      <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                    </svg>
+                    Copy
+                  </button>
+                </FieldLabel>
                 <InputGroup className="flex flex-col border rounded-md overflow-hidden bg-white dark:bg-gray-600 focus-within:ring-2 focus-within:ring-primary/20">
                   <InputGroupTextarea
                     id={field.name}
@@ -132,8 +160,11 @@ export function NotesEditor({
                   />
 
                   {/* THE INFO PANEL / STATUS BAR */}
-                  <div className="w-full flex items-center justify-between px-3 py-1.5 bg-gray-200 dark:bg-gray-700 border border-t-0 rounded-b-md text-[10px] uppercase tracking-wider font-medium text-muted-foreground tabular-nums">
-                    <div className="flex items-center gap-4">
+                  <div className="w-full flex flex-wrap items-center justify-between px-3 py-1.5 bg-gray-200 dark:bg-gray-700 border border-t-0 rounded-b-md text-[10px] uppercase tracking-wider font-medium text-muted-foreground tabular-nums">
+                    <div className="flex gap-4 items-center">
+                      <span className="hidden md:inline-block">
+                        Markdown Mode
+                      </span>
                       {/* STATUS INDICATOR */}
                       <div className="flex items-center gap-1.5">
                         <span
@@ -141,46 +172,13 @@ export function NotesEditor({
                         />
                         {isDirty ? "Unsaved Changes" : "Synced"}
                       </div>
-                      <span>Words: {wordCount}</span>
-                      <span>Chars: {charCount}</span>
                     </div>
-
-                    <div className="flex gap-4 items-center">
-                      <span className="hidden md:inline-block">
-                        Markdown Mode
+                    <div className="flex items-center gap-4">
+                      <span className="hidden md:inline">UTF-8</span>
+                      <span>Words: {wordCount}</span>
+                      <span>
+                        Chars: {charCount} / {MAX_CHARS}
                       </span>
-
-                      {/* COPY BUTTON */}
-                      <button
-                        type="button"
-                        onClick={() => handleCopy(field.state.value)}
-                        className="flex items-center gap-1 hover:text-primary transition-colors uppercase"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org"
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <title>Copy icon</title>
-                          <rect
-                            width="14"
-                            height="14"
-                            x="8"
-                            y="8"
-                            rx="2"
-                            ry="2"
-                          />
-                          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-                        </svg>
-                        Copy
-                      </button>
-                      <span>UTF-8</span>
                     </div>
                   </div>
                 </InputGroup>

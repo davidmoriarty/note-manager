@@ -8,7 +8,7 @@ export function Footer() {
     <footer className="bg-gray-50 dark:bg-gray-900 border-t border-gray-300 dark:border-gray-700">
       <Container className="max-w-400 lg:px-8">
         <div className="flex flex-row items-center justify-between py-4">
-          <p>
+          <p className="flex flex-wrap">
             &copy; {new Date().getFullYear()} Note Manager. All rights reserved.
           </p>
 
