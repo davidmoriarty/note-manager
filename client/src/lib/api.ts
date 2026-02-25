@@ -2,17 +2,10 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 import { setAuthToken, useAuth } from "./auth";
+import type { UserDto, UserBaseDto, MeStatsDto, NoteDto } from "@shared";
+type AuthLoginDto = UserBaseDto & { token: string };
 
 let refreshingToken: Promise<string | null> | null = null;
-
-export type Note = {
-  id: number;
-  title: string;
-  content: string;
-  authorId: number;
-  createdAt?: string;
-  updatedAt?: string;
-};
 
 type RefreshJson = { token: string };
 function isRefreshJson(v: unknown): v is RefreshJson {
@@ -114,52 +107,42 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     throw new Error(error.error || `Request failed: ${res.status}`);
   }
 
-  return (await res.json()) as Promise<T>;
+  if (res.status === 204) {
+    return undefined as T;
+  }
+
+  const text = await res.text();
+  if (!text) return undefined as T;
+
+  return JSON.parse(text) as T;
 }
 
 /** Auth API */
 export const authApi = {
   register: (data: { email: string; password: string; name?: string }) =>
-    request("/auth/register", {
+    request<UserBaseDto>("/auth/register", {
       method: "POST",
       body: JSON.stringify(data),
     }),
 
   login: (data: { email: string; password: string }) =>
-    request<{ id: number; email: string; name?: string; token?: string }>(
-      "/auth/login",
-      {
-        method: "POST",
-        body: JSON.stringify(data),
-      },
-    ),
-
-  me: (data: {
-    id: number;
-    name: string;
-    email: string;
-    createdAt: string;
-    updatedAt: string;
-  }) =>
-    request<{
-      id: number;
-      name: string;
-      email: string;
-      createdAt: string;
-      updatedAt: string;
-    }>("/auth/me", {
-      method: "GET",
+    request<AuthLoginDto>("/auth/login", {
+      method: "POST",
       body: JSON.stringify(data),
     }),
+
+  me: () => request<UserDto>("/auth/me"),
+
+  meStats: () => request<MeStatsDto>("/auth/me/stats"),
 };
 
 /** Notes API */
 export const notesApi = {
   getAll: (order: "asc" | "desc" = "desc") =>
-    request<Note[]>(`/notes?order=${order}`),
-  getOne: (id: number) => request<Note>(`/notes/${id}`),
+    request<NoteDto[]>(`/notes?order=${order}`),
+  getOne: (id: number) => request<NoteDto>(`/notes/${id}`),
   create: (data: { title: string; content: string }) =>
-    request<Note>("/notes", {
+    request<NoteDto>("/notes", {
       method: "POST",
       body: JSON.stringify(data),
     }),
@@ -167,7 +150,7 @@ export const notesApi = {
     id: number,
     data: { title?: string; content?: string; published?: boolean },
   ) =>
-    request<Note>(`/notes/${id}`, {
+    request<NoteDto>(`/notes/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     }),

@@ -28,7 +28,8 @@ import {
 import { LinkButton } from "@/components/ui/LinkButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toastMessage } from "@/components/ui/toast";
-import { type Note, notesApi } from "@/lib/api";
+import type { NoteDto } from "@shared";
+import { notesApi } from "@/lib/api";
 import { buildHead } from "@/lib/meta";
 import { requireAuth } from "@/lib/route-guard";
 
@@ -37,7 +38,7 @@ const SKELETON_KEYS = Array.from({ length: 8 }, (_, i) => `skeleton-${i}`);
 function NotesOverviewPage() {
   const navigate = useNavigate();
 
-  const [notes, setNotes] = useState<Note[]>([]);
+  const [notes, setNotes] = useState<NoteDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [noteToDelete, setNoteToDelete] = useState<number | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");

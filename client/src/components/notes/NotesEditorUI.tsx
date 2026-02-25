@@ -40,11 +40,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Note } from "@/lib/api";
+import type { NoteDto } from "@shared";
 import { toastMessage } from "../ui/toast";
 
 interface NotesEditorUIProps {
-  note?: Note | null;
+  note?: NoteDto | null;
   isNew?: boolean;
   onSave?: (title: string, content: string) => Promise<void>;
   onDelete?: () => Promise<void>;

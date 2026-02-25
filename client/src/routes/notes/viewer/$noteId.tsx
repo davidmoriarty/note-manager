@@ -14,13 +14,14 @@ import {
 import { LinkButton } from "@/components/ui/LinkButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SlideUp } from "@/components/motion/SlideUp";
-import { type Note, notesApi } from "@/lib/api";
+import type { NoteDto } from "@shared";
+import { notesApi } from "@/lib/api";
 import { buildHead } from "@/lib/meta";
 import { requireAuth } from "@/lib/route-guard";
 
 function NotesViewerPage() {
   const { noteId } = Route.useParams();
-  const [note, setNote] = useState<Note | null>(null);
+  const [note, setNote] = useState<NoteDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch notes

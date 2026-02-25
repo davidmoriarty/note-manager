@@ -1,15 +1,10 @@
 // client/src/lib/auth.ts
 import { create } from "zustand";
 import { authApi } from "./api";
-
-type User = {
-  id: number;
-  email: string;
-  name?: string;
-};
+import type { UserBaseDto, UserDto } from "@shared";
 
 type AuthState = {
-  user: User | null;
+  user: UserBaseDto | null;
   token: string | null;
 
   login: (email: string, password: string) => Promise<void>;
@@ -90,4 +85,24 @@ export const useAuth = create<AuthState>((set) => {
 // Optional helper for direct token access
 export function setAuthToken(token: string | null) {
   useAuth.setState({ token });
+}
+
+export async function syncCurrentUser(): Promise<UserDto | null> {
+  try {
+    const user = await authApi.me();
+
+    useAuth.setState({
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
+    });
+
+    return user;
+  } catch {
+    useAuth.setState({ user: null, token: null });
+    localStorage.removeItem("auth");
+    return null;
+  }
 }

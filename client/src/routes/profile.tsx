@@ -1,5 +1,6 @@
 // client/src/routes/profile.tsx
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { Section } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
@@ -13,27 +14,56 @@ import {
 } from "@/components/ui/card";
 import { SlideUp } from "@/components/motion/SlideUp";
 import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/lib/auth";
 import { buildHead } from "@/lib/meta";
 import { requireAuth } from "@/lib/route-guard";
+import { authApi } from "@/lib/api";
 import {
   Mail,
   FileText,
   PlusCircle,
-  Activity,
   ShieldCheck,
   Calendar,
+  Clock,
 } from "lucide-react";
 
-function ProfilePage() {
-  const { user } = useAuth();
+function formatDate(iso: string | null | undefined) {
+  if (!iso) return "-";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "-";
+  return d.toLocaleDateString(undefined, { year: "numeric", month: "short" });
+}
 
-  const initials =
-    user?.name
-      ?.split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase() || "??";
+function formatDateTime(iso: string | null | undefined) {
+  if (!iso) return "-";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "-";
+  return d.toLocaleDateString();
+}
+
+function initialsFromName(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const initials = parts
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase())
+    .join("");
+  return initials || "??";
+}
+
+function ProfilePage() {
+  const meQuery = useQuery({
+    queryKey: ["me"],
+    queryFn: () => authApi.me(),
+  });
+
+  const statsQuery = useQuery({
+    queryKey: ["meStats"],
+    queryFn: () => authApi.meStats(),
+  });
+
+  const me = meQuery.data;
+  const stats = statsQuery.data;
+
+  const initials = me ? initialsFromName(me.name) : "??";
 
   return (
     <PageTransition className="min-h-screen">
@@ -41,14 +71,12 @@ function ProfilePage() {
         <Container className="max-w-4xl">
           <div className="mb-8">
             <SlideUp delay={0}>
-              <h1 className="text-4xl font-black tracking-tight">
-                Profile Page
-              </h1>
+              <h1 className="text-4xl font-black tracking-tight">Dashboard</h1>
             </SlideUp>
 
             <SlideUp delay={40}>
               <p className="text-muted-foreground">
-                Overview page for user profile
+                Profile and account overview
               </p>
             </SlideUp>
           </div>
@@ -62,21 +90,35 @@ function ProfilePage() {
                     {initials}
                   </AvatarFallback>
                 </Avatar>
+
                 <div className="text-center sm:text-left mt-4 sm:mt-0 space-y-1">
                   <CardTitle className="text-4xl font-black tracking-tight">
-                    {user?.name}
+                    {meQuery.isLoading ? "Loading..." : (me?.name ?? "-")}
                   </CardTitle>
                   <CardDescription>
                     <Badge className="bg-gray-200 text-muted-foreground px-4 text-sm">
-                      User ID: {user?.id}
+                      User ID: {me?.id ?? "-"}
                     </Badge>
+
+                    {me?.emailVerified ? (
+                      <Badge className="bg-green-500/10 text-green-600 border-green-500/20">
+                        Verified
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        className="text-muted-foreground"
+                      >
+                        Unverified
+                      </Badge>
+                    )}
                   </CardDescription>
                 </div>
               </div>
             </CardHeader>
 
             <CardContent className="grid gap-6 pt-8">
-              {/* Email Section */}
+              {/* Email */}
               <div className="flex items-center gap-4">
                 <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                   <Mail className="h-5 w-5 text-sky-500 dark:text-sky-400" />
@@ -85,14 +127,11 @@ function ProfilePage() {
                   <p className="text-sm font-medium leading-none text-muted-foreground">
                     Email Address
                   </p>
-                  <p className="text-sm font-semibold">{user?.email}</p>
-                  <Badge className="ml-auto bg-green-500/10 text-green-600 border-green-500/20">
-                    Verified
-                  </Badge>
+                  <p className="text-sm font-semibold">{me?.email ?? "-"}</p>
                 </div>
               </div>
 
-              {/* Account Type Section */}
+              {/* Account Role (still placeholder) */}
               <div className="flex items-center gap-4">
                 <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
                   <ShieldCheck className="h-5 w-5 text-purple-600 dark:text-purple-400" />
@@ -105,7 +144,7 @@ function ProfilePage() {
                 </div>
               </div>
 
-              {/* placeholder for Joined Date */}
+              {/* Member since */}
               <div className="flex items-center gap-4">
                 <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
                   <Calendar className="h-5 w-5 text-amber-600 dark:text-amber-400" />
@@ -114,14 +153,16 @@ function ProfilePage() {
                   <p className="text-sm font-medium leading-none text-muted-foreground">
                     Member Since
                   </p>
-                  <p className="text-sm font-semibold">Jan, 2026</p>
+                  <p className="text-sm font-semibold">
+                    {formatDate(me?.memberSince)}
+                  </p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-            {/* TOTAL NOTES STAT */}
+            {/* TOTAL NOTES */}
             <Card className="bg-white dark:bg-slate-900 shadow-sm border-none">
               <CardContent className="pt-6 flex items-center gap-4">
                 <div className="p-3 bg-primary/10 rounded-full text-primary">
@@ -131,27 +172,31 @@ function ProfilePage() {
                   <p className="text-sm text-muted-foreground font-medium">
                     Total Notes
                   </p>
-                  <p className="text-2xl font-bold">4</p>
+                  <p className="text-2xl font-bold">
+                    {statsQuery.isLoading ? "-" : (stats?.totalNotes ?? 0)}
+                  </p>
                 </div>
               </CardContent>
             </Card>
 
-            {/* RECENT ACTIVITY PLACEHOLDER */}
+            {/* LAST LOGIN */}
             <Card className="bg-white dark:bg-slate-900 shadow-sm border-none">
               <CardContent className="pt-6 flex items-center gap-4">
                 <div className="p-3 bg-emerald-500/10 rounded-full text-emerald-500">
-                  <Activity className="h-6 w-6" />
+                  <Clock className="h-6 w-6" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground font-medium">
-                    Active Status
+                    Last Login
                   </p>
-                  <p className="text-2xl font-bold text-emerald-500">Online</p>
+                  <p className="text-sm font-semibold">
+                    {formatDateTime(me?.lastLoginAt)}
+                  </p>
                 </div>
               </CardContent>
             </Card>
 
-            {/* CTA STAT */}
+            {/* QUICK ACTION */}
             <Link to="/notes/editor" className="group">
               <Card className="bg-primary text-primary-foreground shadow-lg hover:shadow-primary/20 transition-all border-none h-full">
                 <CardContent className="pt-6 flex items-center gap-4">
@@ -169,10 +214,12 @@ function ProfilePage() {
             </Link>
           </div>
 
-          {/* Optional Footer Action */}
-          <div className="flex justify-end italic text-xs text-muted-foreground">
-            Last login: {new Date().toLocaleDateString()}
-          </div>
+          {/* Errors (optional UI) */}
+          {(meQuery.isError || statsQuery.isError) && (
+            <div className="mt-6 text-sm text-destructive">
+              Failed to load dashboard data.
+            </div>
+          )}
         </Container>
       </Section>
     </PageTransition>
