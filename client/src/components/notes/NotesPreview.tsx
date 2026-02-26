@@ -11,25 +11,25 @@ type NotesPreviewProps = {
 
 export function NotesPreview({ title, content }: NotesPreviewProps) {
   return (
-    <Card className="bg-gray-50 dark:bg-gray-600 border-gray-50 dark:border-gray-700 w-full">
-      <CardHeader>
-        <CardTitle className="prose dark:prose-invert max-w-none">
+    <>
+      <div className="pb-2 pl-1 font-medium text-sm">
+        <span>Note Preview</span>
+      </div>
+      <Card className="min-h-[45vh] bg-gray-50 dark:bg-gray-600 border-gray-300 dark:border-gray-700">
+        <CardHeader>
+          <CardTitle className="prose dark:prose-invert max-w-none">
+            {title || "Untitled Note"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-left prose-sm dark:prose-invert max-w-none overflow-auto">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeHighlight]}
           >
-            {title || "Untitled Note"}
+            {content || "Untitled note content"}
           </ReactMarkdown>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="text-left prose-sm dark:prose-invert max-w-none">
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeHighlight]}
-        >
-          {content || "Untitled note content"}
-        </ReactMarkdown>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </>
   );
 }

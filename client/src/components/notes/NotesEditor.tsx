@@ -1,5 +1,6 @@
 // @/components/notes/NotesEditor.tsx
 import { useForm } from "@tanstack/react-form";
+import { useEffect } from "react";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,12 +21,17 @@ type NotesEditorProps = {
   onTitleChange?: (title: string) => void;
   onContentChange?: (content: string) => void;
   onBack?: () => void;
+  isDirty?: boolean;
 };
 
-const handleCopy = (text: string) => {
+const handleCopy = async (text: string) => {
   if (!text) return;
-  navigator.clipboard.writeText(text);
-  toastMessage("success", "Copied to clipboard!");
+  try {
+    await navigator.clipboard.writeText(text);
+    toastMessage("success", "Copied to clipboard!");
+  } catch {
+    toastMessage("error", "Failed to copy to clipboard!");
+  }
 };
 
 const MAX_CHARS = 2000;
@@ -43,6 +49,7 @@ export function NotesEditor({
   onTitleChange,
   onContentChange,
   onBack,
+  isDirty = false,
 }: NotesEditorProps) {
   const form = useForm({
     defaultValues: {
@@ -55,7 +62,7 @@ export function NotesEditor({
     onSubmit: async ({ value }) => {
       try {
         await onSave(value.title, value.content);
-
+        form.reset(value);
         toastMessage("success", isNew ? "Note Created!" : "Note updated!");
       } catch (_err) {
         toastMessage(
@@ -65,6 +72,13 @@ export function NotesEditor({
       }
     },
   });
+
+  useEffect(() => {
+    form.reset({
+      title: note?.title || "",
+      content: note?.content || "",
+    });
+  }, [form, note?.title, note?.content]);
 
   return (
     <form
@@ -105,7 +119,6 @@ export function NotesEditor({
           {(field) => {
             const isInvalid =
               !field.state.meta.isValid && field.state.meta.isTouched;
-            const isDirty = field.state.meta.isPristine === false;
             const charCount = field.state.value.length;
             const wordCount = field.state.value
               .trim()
@@ -122,11 +135,13 @@ export function NotesEditor({
                   {/* COPY BUTTON */}
                   <button
                     type="button"
-                    onClick={() => handleCopy(field.state.value)}
-                    className="flex items-center gap-1 hover:text-primary transition-colors uppercase"
+                    onClick={() => void handleCopy(field.state.value)}
+                    disabled={!field.state.value}
+                    aria-label="Copy note content to clipboard"
+                    className="flex items-center gap-1 hover:text-primary transition-colors uppercase disabled:opacity-50 disabled:hover:text-inherit"
                   >
                     <svg
-                      xmlns="http://www.w3.org"
+                      xmlns="http://www.w3.org/2000/svg"
                       width="12"
                       height="12"
                       viewBox="0 0 24 24"
@@ -135,15 +150,15 @@ export function NotesEditor({
                       strokeWidth="2.5"
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      aria-hidden="true"
                     >
-                      <title>Copy icon</title>
                       <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
                       <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
                     </svg>
                     Copy
                   </button>
                 </FieldLabel>
-                <InputGroup className="flex flex-col border rounded-md overflow-hidden bg-white dark:bg-gray-600 focus-within:ring-2 focus-within:ring-primary/20">
+                <InputGroup className="h-full flex flex-col border rounded-md overflow-hidden bg-white dark:bg-gray-600 focus-within:ring-2 focus-within:ring-primary/20">
                   <InputGroupTextarea
                     id={field.name}
                     name={field.name}
@@ -153,8 +168,7 @@ export function NotesEditor({
                       field.handleChange(e.target.value);
                       onContentChange?.(e.target.value);
                     }}
-                    rows={25}
-                    className="bg-gray-50 dark:bg-gray-600 text-base min-h-[40ch] border rounded resize-none placeholder:text-muted-foreground placeholder:text-base placeholder:italic"
+                    className="flex-1 bg-gray-50 dark:bg-gray-600 text-base border rounded resize-none placeholder:text-muted-foreground placeholder:text-base placeholder:italic"
                     placeholder="Untitled note content"
                     aria-invalid={isInvalid}
                   />

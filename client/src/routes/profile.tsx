@@ -26,18 +26,28 @@ import {
   Clock,
 } from "lucide-react";
 
-function formatDate(iso: string | null | undefined) {
+function formatFullDate(iso: string | null | undefined) {
   if (!iso) return "-";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "-";
-  return d.toLocaleDateString(undefined, { year: "numeric", month: "short" });
+  return d.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 }
 
 function formatDateTime(iso: string | null | undefined) {
   if (!iso) return "-";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "-";
-  return d.toLocaleDateString();
+  return d.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }
 
 function initialsFromName(name: string) {
@@ -95,23 +105,10 @@ function ProfilePage() {
                   <CardTitle className="text-4xl font-black tracking-tight">
                     {meQuery.isLoading ? "Loading..." : (me?.name ?? "-")}
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="flex flex-wrap items-center gap-2">
                     <Badge className="bg-gray-200 text-muted-foreground px-4 text-sm">
                       User ID: {me?.id ?? "-"}
                     </Badge>
-
-                    {me?.emailVerified ? (
-                      <Badge className="bg-green-500/10 text-green-600 border-green-500/20">
-                        Verified
-                      </Badge>
-                    ) : (
-                      <Badge
-                        variant="outline"
-                        className="text-muted-foreground"
-                      >
-                        Unverified
-                      </Badge>
-                    )}
                   </CardDescription>
                 </div>
               </div>
@@ -127,7 +124,23 @@ function ProfilePage() {
                   <p className="text-sm font-medium leading-none text-muted-foreground">
                     Email Address
                   </p>
-                  <p className="text-sm font-semibold">{me?.email ?? "-"}</p>
+
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <span>{me?.email ?? "-"}</span>
+
+                    {me?.emailVerified ? (
+                      <Badge className="bg-teal-400/10 text-teal-400 border-teal-400/20">
+                        Email Verified
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        className="text-muted-foreground"
+                      >
+                        Email Unverified
+                      </Badge>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -154,7 +167,7 @@ function ProfilePage() {
                     Member Since
                   </p>
                   <p className="text-sm font-semibold">
-                    {formatDate(me?.memberSince)}
+                    {formatFullDate(me?.memberSince)}
                   </p>
                 </div>
               </div>
