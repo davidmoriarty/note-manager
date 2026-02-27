@@ -6,17 +6,13 @@ Full-stack notes application demonstrating secure JWT authentication, rotating r
 
 ## Screenshots
 
-<p align="center">
-  <img src="docs/screenshots/notemanager-overview.webp" width="900" />
-  <br />
-  <em>Notes overview with protected route and authenticated session.</em>
-</p>
+| Overview | Editor |
+| --- | --- |
+| ![Notes overview (dark)](./docs/screenshots/notemanager-overview-dark.webp) | ![Note editor (dark)](./docs/screenshots/notemanager-editor-dark.webp) |
 
-<p align="center">
-  <img src="docs/screenshots/notemanager-editor.webp" width="900" />
-  <br />
-  <em>Notes editor with validated form input and character counter.</em>
-</p>
+| Viewer | Profile |
+| --- | --- |
+| ![Note viewer (dark)](./docs/screenshots/notemanager-viewer-dark.webp) | ![Profile dashboard (dark)](./docs/screenshots/notemanager-dashboard-dark.webp) |
 
 ---
 

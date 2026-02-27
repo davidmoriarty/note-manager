@@ -15,9 +15,7 @@
   },
   "packageManager": "bun@1.3.9",
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,css,md,yml,yaml}": [
-      "biome check --write"
-    ]
+    "*.{js,jsx,ts,tsx,json,css,yml,yaml}": "biome check --write"
   },
   "workspaces": [
     "./server",
