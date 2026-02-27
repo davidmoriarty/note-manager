@@ -1,30 +1,13 @@
 // client/src/routes/notes/index.tsx
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowDownAZ, ArrowUpAZ } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeHighlight from "rehype-highlight";
+import { NoteCard } from "@/components/notes/NoteCard";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { SlideUp } from "@/components/motion/SlideUp";
 import { Section } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
-import { DeleteNoteDialog } from "@/components/notes/DeleteNoteDialog";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import {
-  ButtonGroup,
-  ButtonGroupSeparator,
-} from "@/components/ui/button-group";
 import { LinkButton } from "@/components/ui/LinkButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toastMessage } from "@/components/ui/toast";
@@ -36,12 +19,17 @@ import { requireAuth } from "@/lib/route-guard";
 const SKELETON_KEYS = Array.from({ length: 8 }, (_, i) => `skeleton-${i}`);
 
 function NotesOverviewPage() {
-  const navigate = useNavigate();
-
   const [notes, setNotes] = useState<NoteDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [noteToDelete, setNoteToDelete] = useState<number | null>(null);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
+    () => (localStorage.getItem("noteSort") as "asc" | "desc") ?? "asc",
+  );
+
+  useEffect(() => {
+    localStorage.setItem("noteSort", sortOrder);
+  }, [sortOrder]);
 
   // Show toast for success query param
   useEffect(() => {
@@ -85,22 +73,12 @@ function NotesOverviewPage() {
     }
   };
 
-  const formatDate = (ts: string | Date) =>
-    new Date(ts).toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-
-  const preview = (content: string) =>
-    content.length > 40 ? `${content.substring(0, 40)}...` : content;
-
   return (
     <PageTransition className="min-h-screen">
-      <Section padding="py-16">
+      <Section padding="py-6">
         <Container className="max-w-400">
-          <div className="flex flex-row flex-wrap items-center justify-between gap-6 border-b border-border px-4 pb-8 mb-6">
-            <div className="space-y-2">
+          <div className="flex flex-row flex-wrap items-center justify-between gap-6 border-b border-border px-4 pb-6 mb-6">
+            <div className="space-y-1">
               <SlideUp delay={0}>
                 <h1 className="text-4xl font-black tracking-tight">
                   Notes Overview
@@ -126,7 +104,7 @@ function NotesOverviewPage() {
             {/*Notes sorting toggles*/}
             <ToggleGroup
               type="single"
-              defaultValue="desc"
+              value={sortOrder}
               onValueChange={(value) =>
                 value && setSortOrder(value as "asc" | "desc")
               }
@@ -167,58 +145,13 @@ function NotesOverviewPage() {
                     </div>
                   ))
                 : notes.map((note) => (
-                    <Card
+                    <NoteCard
                       key={note.id}
-                      className="flex flex-col justify-between pt-4"
-                    >
-                      <CardHeader>
-                        <CardTitle className="prose-lg dark:prose-invert">
-                          {note.title || "Untitled Note"}
-                        </CardTitle>
-                        {note.createdAt && (
-                          <CardDescription className="prose dark:prose-invert">
-                            {formatDate(note.createdAt)}
-                          </CardDescription>
-                        )}
-                      </CardHeader>
-                      <CardContent className="font-normal font-sm">
-                        <ReactMarkdown
-                          remarkPlugins={[remarkGfm]}
-                          rehypePlugins={[rehypeHighlight]}
-                        >
-                          {preview(note.content || "")}
-                        </ReactMarkdown>
-                      </CardContent>
-                      <CardFooter>
-                        <CardAction>
-                          <ButtonGroup>
-                            {/* SAVE / EDIT Button */}
-                            <Button
-                              variant="primary"
-                              size="sm"
-                              onClick={() => {
-                                navigate({
-                                  to: `/notes/viewer/${note.id}`,
-                                  params: { noteId: String(note.id) },
-                                });
-                              }}
-                            >
-                              View
-                            </Button>
-                            <ButtonGroupSeparator />
-                            {/* DELETE NOTE Dialog */}
-                            <DeleteNoteDialog
-                              noteId={note.id}
-                              open={noteToDelete === note.id}
-                              onOpenChange={(open) =>
-                                setNoteToDelete(open ? note.id : null)
-                              }
-                              onDelete={deleteNote}
-                            />
-                          </ButtonGroup>
-                        </CardAction>
-                      </CardFooter>
-                    </Card>
+                      note={note}
+                      noteToDelete={noteToDelete}
+                      setNoteToDelete={setNoteToDelete}
+                      onDelete={deleteNote}
+                    />
                   ))}
             </div>
           </div>

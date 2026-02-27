@@ -1,10 +1,10 @@
 // client/src/routes/notes/viewer/$noteId.tsx
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeHighlight from "rehype-highlight";
+import { MarkdownRenderer } from "@/components/notes/MarkdownRenderer";
 import { ErrorPage } from "@/components/error/ErrorPage";
+import { Skeleton } from "@/components/ui/skeleton";
 import { PageTransition } from "@/components/motion/PageTransition";
+import { SlideUp } from "@/components/motion/SlideUp";
 import { Section } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
 import {
@@ -12,8 +12,6 @@ import {
   ButtonGroupSeparator,
 } from "@/components/ui/button-group";
 import { LinkButton } from "@/components/ui/LinkButton";
-import { Skeleton } from "@/components/ui/skeleton";
-import { SlideUp } from "@/components/motion/SlideUp";
 import { notesApi } from "@/lib/api";
 import { buildHead } from "@/lib/meta";
 import { requireAuth } from "@/lib/route-guard";
@@ -27,10 +25,10 @@ const formatDate = (ts: string | Date) =>
 
 function NotesViewerSkeleton() {
   return (
-    <PageTransition className="min-h-[calc(100vh-8rem)]">
-      <Section padding="py-16">
+    <PageTransition className="flex-1 min-h-[calc(100vh-12rem)] max-h-screen py-8">
+      <Section padding="py-8">
         <Container className="max-w-4xl">
-          <div className="mb-8 space-y-2">
+          <div className="space-y-2 py-6 mb-8">
             <SlideUp delay={0}>
               <h1 className="text-4xl font-black tracking-tight">Note View</h1>
             </SlideUp>
@@ -42,7 +40,13 @@ function NotesViewerSkeleton() {
             </SlideUp>
           </div>
 
-          <article className="max-w-4xl mx-auto border-2 border-gray-400 dark:border-gray-500 rounded prose dark:prose-invert p-8 space-y-4">
+          <article
+            className="
+              max-w-4xl min-h-[calc(100vh-32rem)] mx-auto
+              border border-gray-300 dark:border-gray-600 rounded
+              prose dark:prose-invert py-6 px-12 space-y-4 mb-2
+            "
+          >
             <header className="font-bold prose-2xl">
               <Skeleton className="h-8 w-3/4 animate-pulse" />
             </header>
@@ -71,10 +75,10 @@ function NotesViewerPage() {
   const note = Route.useLoaderData();
 
   return (
-    <PageTransition className="min-h-[calc(100vh-8rem)]">
-      <Section padding="py-16">
+    <PageTransition className="flex-1 min-h-[calc(100vh-12rem)] max-h-screen py-8">
+      <Section padding="py-8">
         <Container className="max-w-4xl">
-          <div className="mb-8 space-y-2">
+          <div className="space-y-2 py-6 mb-8">
             <SlideUp delay={0}>
               <h1 className="text-4xl font-black tracking-tight">Note View</h1>
             </SlideUp>
@@ -86,15 +90,14 @@ function NotesViewerPage() {
             </SlideUp>
           </div>
 
-          <article className="max-w-4xl mx-auto border-2 border-gray-400 dark:border-gray-500 rounded prose dark:prose-invert p-8 space-y-4">
-            <header className="font-bold prose-2xl">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeHighlight]}
-              >
-                {note.title}
-              </ReactMarkdown>
-            </header>
+          <article
+            className="
+              max-w-4xl min-h-[calc(100vh-32rem)] mx-auto
+              border border-gray-300 dark:border-gray-600 rounded
+              prose dark:prose-invert py-6 px-12 space-y-4 mb-2
+            "
+          >
+            <header className="font-bold prose-2xl">{note.title}</header>
 
             <section className="prose dark:prose-invert">
               <p>Created: {formatDate(note.createdAt)}</p>
@@ -102,35 +105,31 @@ function NotesViewerPage() {
             </section>
 
             <section className="py-4">
-              <div className="text-left prose-sm dark:prose-invert max-w-none">
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeHighlight]}
-                >
-                  {note.content || "No content available"}
-                </ReactMarkdown>
-              </div>
-            </section>
-
-            <section className="border-t border-gray-400 dark:border-gray-400 pt-6">
-              <ButtonGroup>
-                <LinkButton to="/notes" variant="secondary" size="md">
-                  Back
-                </LinkButton>
-
-                <ButtonGroupSeparator />
-
-                <LinkButton
-                  to="/notes/editor/$noteId"
-                  params={{ noteId: String(note.id) }}
-                  variant="primary"
-                  size="md"
-                >
-                  Edit
-                </LinkButton>
-              </ButtonGroup>
+              <MarkdownRenderer
+                content={note.content || "No content available"}
+                className="[&_.prose_pre+pre]:mt-4"
+              />
             </section>
           </article>
+
+          <section className="mt-6">
+            <ButtonGroup>
+              <LinkButton to="/notes" variant="secondary" size="md">
+                Back
+              </LinkButton>
+
+              <ButtonGroupSeparator />
+
+              <LinkButton
+                to="/notes/editor/$noteId"
+                params={{ noteId: String(note.id) }}
+                variant="primary"
+                size="md"
+              >
+                Edit
+              </LinkButton>
+            </ButtonGroup>
+          </section>
         </Container>
       </Section>
     </PageTransition>

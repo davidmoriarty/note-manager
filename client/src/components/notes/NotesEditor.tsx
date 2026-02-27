@@ -82,12 +82,13 @@ export function NotesEditor({
 
   return (
     <form
+      className="h-full flex flex-col"
       onSubmit={(e) => {
         e.preventDefault();
         form.handleSubmit();
       }}
     >
-      <FieldGroup>
+      <FieldGroup className="flex-1 min-h-0">
         <form.Field name="title">
           {(field) => {
             const isInvalid =
@@ -126,7 +127,10 @@ export function NotesEditor({
               .filter(Boolean).length;
 
             return (
-              <Field data-invalid={isInvalid}>
+              <Field
+                data-invalid={isInvalid}
+                className="flex flex-col flex-1 min-h-0"
+              >
                 <FieldLabel
                   htmlFor={field.name}
                   className="flex items-center justify-between"
@@ -158,7 +162,7 @@ export function NotesEditor({
                     Copy
                   </button>
                 </FieldLabel>
-                <InputGroup className="h-full flex flex-col border rounded-md overflow-hidden bg-white dark:bg-gray-600 focus-within:ring-2 focus-within:ring-primary/20">
+                <InputGroup className="flex-1 min-h-0 flex flex-col border rounded-md overflow-hidden bg-white dark:bg-gray-600 focus-within:ring-2 focus-within:ring-primary/20">
                   <InputGroupTextarea
                     id={field.name}
                     name={field.name}
@@ -168,7 +172,7 @@ export function NotesEditor({
                       field.handleChange(e.target.value);
                       onContentChange?.(e.target.value);
                     }}
-                    className="flex-1 bg-gray-50 dark:bg-gray-600 text-base border rounded resize-none placeholder:text-muted-foreground placeholder:text-base placeholder:italic"
+                    className="flex-1 min-h-0 bg-gray-50 dark:bg-gray-600 text-base border rounded resize-none placeholder:text-muted-foreground placeholder:text-base placeholder:italic"
                     placeholder="Untitled note content"
                     aria-invalid={isInvalid}
                   />
@@ -203,7 +207,7 @@ export function NotesEditor({
         </form.Field>
       </FieldGroup>
 
-      <FieldGroup className="pt-8">
+      <FieldGroup className="pt-6 shrink-0">
         <Field orientation="horizontal">
           <Button type="submit" variant="primary" size="sm">
             {isNew ? "Create Note" : "Save Changes"}

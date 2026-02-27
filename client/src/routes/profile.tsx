@@ -106,7 +106,7 @@ function ProfilePage() {
                     {meQuery.isLoading ? "Loading..." : (me?.name ?? "-")}
                   </CardTitle>
                   <CardDescription className="flex flex-wrap items-center gap-2">
-                    <Badge className="bg-gray-200 text-muted-foreground px-4 text-sm">
+                    <Badge className="bg-teal-500 text-background px-4 text-sm">
                       User ID: {me?.id ?? "-"}
                     </Badge>
                   </CardDescription>

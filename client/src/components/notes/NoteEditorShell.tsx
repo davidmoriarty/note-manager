@@ -1,13 +1,13 @@
 // client/src/components/notes/NoteEditorShell.tsx
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { PageTransition } from "@/components/motion/PageTransition";
+import { SlideUp } from "@/components/motion/SlideUp";
 import { Section } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
 import { NotesEditor } from "@/components/notes/NotesEditor";
 import { NotesPreview } from "@/components/notes/NotesPreview";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { PageTransition } from "@/components/motion/PageTransition";
-import { SlideUp } from "@/components/motion/SlideUp";
 import { FileText, Eye, Columns2, PlusCircle } from "lucide-react";
 
 export type NoteDraft = { title: string; content: string };
@@ -31,6 +31,10 @@ type NoteEditorShellProps = {
 
 type ViewMode = "editor" | "preview" | "dual";
 
+const MODE_KEY = "note-manager:editor-mode";
+const isViewMode = (v: unknown): v is ViewMode =>
+  v === "editor" || v === "preview" || v === "dual";
+
 export function NoteEditorShell({
   heading,
   subheading,
@@ -43,7 +47,14 @@ export function NoteEditorShell({
   onBack,
   quickActionTo,
 }: NoteEditorShellProps) {
-  const [mode, setMode] = useState<ViewMode>("dual");
+  const [mode, setMode] = useState<ViewMode>(() => {
+    const saved = localStorage.getItem(MODE_KEY);
+    return isViewMode(saved) ? saved : "dual";
+  });
+
+  useEffect(() => {
+    localStorage.setItem(MODE_KEY, mode);
+  }, [mode]);
 
   const editor = (
     <NotesEditor
@@ -60,50 +71,34 @@ export function NoteEditorShell({
 
   const preview = <NotesPreview title={draft.title} content={draft.content} />;
 
-  return (
-    <PageTransition className="min-h-screen">
-      <Section padding="py-8">
-        <Container className="max-w-6xl">
-          <div className="flex flex-col gap-6">
-            <div className="space-y-2">
-              <SlideUp delay={0}>
-                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                  {/* Left: Heading */}
-                  <div className="space-y-1">
-                    <h1 className="text-2xl md:text-3xl font-black tracking-tight">
-                      {heading}
-                    </h1>
-                    {subheading && (
-                      <p className="text-muted-foreground text-sm md:text-base">
-                        {subheading}
-                      </p>
-                    )}
-                  </div>
+  const dual = useMemo(
+    () => (
+      <div className="grid h-full gap-4 md:grid-cols-2">
+        <div className="h-full min-h-0">{editor}</div>
+        <div className="h-full min-h-0">{preview}</div>
+      </div>
+    ),
+    [editor, preview],
+  );
 
-                  {/* Right: Controls */}
-                  <div className="flex flex-col items-start md:items-end gap-3">
-                    <ToggleGroup
-                      type="single"
-                      value={mode}
-                      onValueChange={(v) => {
-                        if (v === "editor" || v === "preview" || v === "dual")
-                          setMode(v);
-                      }}
-                      className="justify-start md:justify-end"
-                    >
-                      <ToggleGroupItem value="editor">
-                        <FileText className="h-4 w-4 mr-2" />
-                        Editor
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="preview">
-                        <Eye className="h-4 w-4 mr-2" />
-                        Preview
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="dual">
-                        <Columns2 className="h-4 w-4 mr-2" />
-                        Dual
-                      </ToggleGroupItem>
-                    </ToggleGroup>
+  return (
+    <PageTransition>
+      <Section padding="py-6">
+        <Container className="max-w-7xl">
+          <div className="flex flex-col gap-6">
+            {/* Header row */}
+            <div className="flex flex-col gap-3 md:flex-row md:items-baseline md:justify-between">
+              <SlideUp delay={0}>
+                <div className="space-y-2">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h1 className="text-4xl font-black tracking-tight">
+                        {heading}
+                      </h1>
+                      {subheading && (
+                        <p className="text-muted-foreground">{subheading}</p>
+                      )}
+                    </div>
 
                     {quickActionTo && (
                       <Link
@@ -117,19 +112,55 @@ export function NoteEditorShell({
                   </div>
                 </div>
               </SlideUp>
+
+              <SlideUp delay={40}>
+                <ToggleGroup
+                  type="single"
+                  value={mode}
+                  onValueChange={(v) => {
+                    if (v === "editor" || v === "preview" || v === "dual")
+                      setMode(v);
+                  }}
+                  className="justify-start rounded-md border bg-background p-1 shadow-sm"
+                >
+                  <ToggleGroupItem
+                    value="editor"
+                    aria-label="Editor"
+                    className="rounded-sm px-3"
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Editor
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="preview"
+                    aria-label="Preview"
+                    className="rounded-sm px-3"
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Preview
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="dual"
+                    aria-label="Dual"
+                    className="rounded-sm px-3"
+                  >
+                    <Columns2 className="h-4 w-4 mr-2" />
+                    Dual
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              </SlideUp>
             </div>
 
-            {/* Content */}
-            {mode === "dual" ? (
-              <div className="grid gap-4 md:grid-cols-2 md:items-stretch">
-                <div className="min-h-0 h-full">{editor}</div>
-                <div className="min-h-0 h-full">{preview}</div>
-              </div>
-            ) : (
-              <div className="min-h-0">
-                {mode === "editor" ? editor : preview}
-              </div>
-            )}
+            {/* Content area height + internal scrolling */}
+            <div className="flex-1 min-h-[calc(100vh-18rem)] py-8">
+              {mode === "dual" ? (
+                dual
+              ) : (
+                <div className="h-full min-h-0">
+                  {mode === "editor" ? editor : preview}
+                </div>
+              )}
+            </div>
           </div>
         </Container>
       </Section>
