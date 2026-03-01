@@ -129,7 +129,7 @@ export function NotesEditor({
             return (
               <Field
                 data-invalid={isInvalid}
-                className="flex flex-col flex-1 min-h-0"
+                className="flex flex-col flex-1 min-h-[25vh] md:min-h-[40vh]"
               >
                 <FieldLabel
                   htmlFor={field.name}

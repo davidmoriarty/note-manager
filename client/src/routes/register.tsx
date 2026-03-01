@@ -46,13 +46,14 @@ function RegisterPage() {
   };
 
   return (
-    <PageTransition className="min-h-[90vh] flex flex-col items-center justify-center ">
-      <Section padding="py-16">
-        <Container className="max-w-xl">
-          <div className="mb-8 space-y-2">
+    <PageTransition className="min-h-[calc(100vh-10rem)]">
+      <Section padding="pt-8 pb-2">
+        <Container padding="px-4 md:px-6 lg:px-8" className="max-w-7xl">
+          <div className="space-y-2">
             <SlideUp delay={0}>
-              <h1 className="text-4xl mb-4">Sign up</h1>
+              <h1 className="text-4xl font-black tracking-tight">Sign up</h1>
             </SlideUp>
+
             <SlideUp delay={40}>
               <p className="text-muted-foreground">
                 An account allows you to use the notes services. Creating an
@@ -60,9 +61,13 @@ function RegisterPage() {
               </p>
             </SlideUp>
           </div>
+        </Container>
+      </Section>
 
+      <Section padding="py-8">
+        <Container className="max-w-3xl bg-slate-50 sm:rounded p-8">
           <form onSubmit={handleSubmit}>
-            <FieldSet className="max-w-xl mx-auto">
+            <FieldSet>
               <Field>
                 <FieldLabel htmlFor="name">Full name</FieldLabel>
                 <Input
@@ -106,16 +111,16 @@ function RegisterPage() {
               </Field>
 
               <Field className="mt-4">
-                <Button type="submit" variant="sky" size="lg">
+                <Button type="submit" variant="primary" size="lg">
                   Sign up
                 </Button>
               </Field>
             </FieldSet>
           </form>
 
-          <div className="flex flex-row items-center justify-center text-center gap-x-2 pt-4">
+          <div className="flex flex-row items-center justify-center text-center gap-x-4 pt-6">
             <p>Already have an account?</p>
-            <LinkButton to="/login" variant="link" size="sm">
+            <LinkButton to="/login" variant="ghost" size="sm">
               Sign in
             </LinkButton>
           </div>

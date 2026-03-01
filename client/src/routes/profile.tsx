@@ -76,10 +76,10 @@ function ProfilePage() {
   const initials = me ? initialsFromName(me.name) : "??";
 
   return (
-    <PageTransition className="min-h-screen">
-      <Section padding="py-12">
-        <Container className="max-w-4xl">
-          <div className="mb-8">
+    <PageTransition className="min-h-screen pb-4">
+      <Section padding="py-8">
+        <Container padding="px-4 sm:px-6 md:px-8" className="max-w-7xl">
+          <div className="space-y-1">
             <SlideUp delay={0}>
               <h1 className="text-4xl font-black tracking-tight">Dashboard</h1>
             </SlideUp>
@@ -90,7 +90,11 @@ function ProfilePage() {
               </p>
             </SlideUp>
           </div>
+        </Container>
+      </Section>
 
+      <Section padding="py-8">
+        <Container padding="px-4 sm:px-6 md:px-8" className="max-w-7xl">
           <Card className="bg-transparent overflow-hidden border-2">
             <CardHeader>
               <div className="flex flex-col items-center sm:flex-row sm:gap-6">
@@ -173,7 +177,11 @@ function ProfilePage() {
               </div>
             </CardContent>
           </Card>
+        </Container>
+      </Section>
 
+      <Section padding="py-8">
+        <Container padding="px-4 sm:px-6 md:px-8" className="max-w-7xl">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
             {/* TOTAL NOTES */}
             <Card className="bg-white dark:bg-slate-900 shadow-sm border-none">

@@ -19,8 +19,8 @@ export function FeaturesSection() {
   ];
 
   return (
-    <section id="features-section" className="bg-muted text-foreground py-24">
-      <Container className="max-w-7xl">
+    <section id="features-section" className="bg-muted text-foreground py-16">
+      <Container padding="px-4 sm:px-6 md:px-8" className="max-w-7xl">
         <div className="flex flex-col gap-4 mb-16 text-center">
           <SlideUp delay={0}>
             <h2 className="text-3xl font-semibold tracking-tight">

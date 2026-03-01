@@ -7,11 +7,7 @@ type Props = {
   className?: string;
 };
 
-export function Container({
-  children,
-  padding = "px-4",
-  className = "",
-}: Props) {
+export function Container({ children, padding = "", className = "" }: Props) {
   return (
     <div className={`container mx-auto ${padding} ${className}`}>
       {children}

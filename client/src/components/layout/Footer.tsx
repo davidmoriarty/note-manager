@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button";
 export function Footer() {
   return (
     <footer className="bg-gray-50 dark:bg-gray-900 border-t border-gray-300 dark:border-gray-700">
-      <Container className="max-w-400 lg:px-8">
-        <div className="flex flex-row items-center justify-between py-4">
-          <p className="flex flex-wrap">
-            &copy; {new Date().getFullYear()} Note Manager. All rights reserved.
-          </p>
+      <Container padding="px-4 sm:px-6 md:px-8" className="max-w-7xl">
+        <div className="w-full flex flex-row items-center justify-between py-4">
+          <div className="text-xs sm:text-base flex flex-col sm:flex-row gap-1">
+            <p>&copy; {new Date().getFullYear()} Note Manager.</p>
+            <p>All rights reserved.</p>
+          </div>
 
           <Button
             variant="primary"

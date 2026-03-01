@@ -16,7 +16,7 @@ function RootLayout() {
     <>
       <HeadContent />
       <Header />
-      <main className="flex flex-col flex-1">
+      <main className="flex flex-col">
         <Outlet />
       </main>
       <Footer />

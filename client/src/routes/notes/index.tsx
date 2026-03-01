@@ -74,9 +74,9 @@ function NotesOverviewPage() {
   };
 
   return (
-    <PageTransition className="min-h-screen">
-      <Section padding="py-6">
-        <Container className="max-w-400">
+    <PageTransition className="min-h-[calc(100vh-10rem)]">
+      <Section padding="py-8">
+        <Container padding="px-2 sm:px-4 md:px-6 lg:px-8" className="max-w-7xl">
           <div className="flex flex-row flex-wrap items-center justify-between gap-6 border-b border-border px-4 pb-6 mb-6">
             <div className="space-y-1">
               <SlideUp delay={0}>
@@ -100,32 +100,36 @@ function NotesOverviewPage() {
             </SlideUp>
           </div>
 
-          <div className="flex flex-col gap-3 px-4">
-            {/*Notes sorting toggles*/}
-            <ToggleGroup
-              type="single"
-              value={sortOrder}
-              onValueChange={(value) =>
-                value && setSortOrder(value as "asc" | "desc")
-              }
-              className="ml-auto mb-2"
+          {/*Notes sorting toggles*/}
+          <ToggleGroup
+            type="single"
+            value={sortOrder}
+            onValueChange={(value) =>
+              value && setSortOrder(value as "asc" | "desc")
+            }
+            className="ml-auto pr-2 sm:pr-4 md:pr-6 lg:pr-8"
+          >
+            <ToggleGroupItem
+              value="desc"
+              aria-label="Newest First"
+              className="bg-secondary text-background"
             >
-              <ToggleGroupItem
-                value="desc"
-                aria-label="Newest First"
-                className="bg-secondary text-background"
-              >
-                <ArrowDownAZ />
-              </ToggleGroupItem>
-              <ToggleGroupItem
-                value="asc"
-                aria-label="Oldest First"
-                className="bg-secondary text-background"
-              >
-                <ArrowUpAZ />
-              </ToggleGroupItem>
-            </ToggleGroup>
+              <ArrowDownAZ />
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="asc"
+              aria-label="Oldest First"
+              className="bg-secondary text-background"
+            >
+              <ArrowUpAZ />
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </Container>
+      </Section>
 
+      <Section padding="pb-8">
+        <Container padding="px-2 sm:px-4 md:px-6 lg:px-8" className="max-w-7xl">
+          <div className="flex flex-col gap-3 px-4">
             {/* Notes Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
               {isLoading

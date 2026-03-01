@@ -41,22 +41,30 @@ function LoginPage() {
   };
 
   return (
-    <PageTransition className="min-h-[90vh] flex flex-col items-center justify-center ">
-      <Section padding="py-16">
-        <Container className="max-w-xl">
-          <div className="mb-8 space-y-2">
+    <PageTransition className="min-h-[calc(100vh-10rem)]">
+      <Section padding="pt-8 pb-4">
+        <Container padding="px-4 md:px-6 lg:px-8" className="max-w-7xl">
+          <div className="space-y-2">
             <SlideUp delay={0}>
-              <h1 className="text-4xl mb-4">Sign in</h1>
+              <h1 className="text-4xl font-black tracking-tight">Sign in</h1>
             </SlideUp>
+
             <SlideUp delay={40}>
               <p className="text-muted-foreground">
                 Enter your email and password to access your account.
               </p>
             </SlideUp>
           </div>
+        </Container>
+      </Section>
 
+      <Section padding="py-8">
+        <Container
+          padding="px-4 md:px-6 lg:px-8"
+          className="max-w-3xl sm:rounded"
+        >
           <form onSubmit={handleSubmit}>
-            <FieldSet className="max-w-xl mx-auto">
+            <FieldSet>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
@@ -86,7 +94,7 @@ function LoginPage() {
               </Field>
 
               <Field className="mt-4">
-                <Button type="submit" variant="sky" size="lg">
+                <Button type="submit" variant="primary" size="lg">
                   Sign in
                 </Button>
               </Field>
@@ -99,9 +107,9 @@ function LoginPage() {
             </FieldSet>
           </form>
 
-          <div className="flex flex-row items-center justify-center text-center gap-x-2 pt-4">
+          <div className="flex flex-row items-center justify-center text-center gap-x-4 pt-6">
             <p>Don't have an account?</p>
-            <LinkButton to="/register" variant="link" size="sm">
+            <LinkButton to="/register" variant="ghost" size="sm">
               Sign up
             </LinkButton>
           </div>

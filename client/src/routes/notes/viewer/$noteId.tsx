@@ -25,10 +25,10 @@ const formatDate = (ts: string | Date) =>
 
 function NotesViewerSkeleton() {
   return (
-    <PageTransition className="flex-1 min-h-[calc(100vh-12rem)] max-h-screen py-8">
-      <Section padding="py-8">
+    <PageTransition>
+      <Section>
         <Container className="max-w-4xl">
-          <div className="space-y-2 py-6 mb-8">
+          <div className="space-y-2 py-6 mb-2">
             <SlideUp delay={0}>
               <h1 className="text-4xl font-black tracking-tight">Note View</h1>
             </SlideUp>
@@ -42,9 +42,9 @@ function NotesViewerSkeleton() {
 
           <article
             className="
-              max-w-4xl min-h-[calc(100vh-32rem)] mx-auto
+              max-w-4xl mx-auto
               border border-gray-300 dark:border-gray-600 rounded
-              prose dark:prose-invert py-6 px-12 space-y-4 mb-2
+              prose dark:prose-invert p-4 pb-0 space-y-4
             "
           >
             <header className="font-bold prose-2xl">
@@ -57,7 +57,7 @@ function NotesViewerSkeleton() {
               </div>
             </section>
 
-            <section className="border-t border-gray-400 dark:border-gray-400 pt-6">
+            <section className="pb-6 mt-4">
               <ButtonGroup>
                 <LinkButton to="/notes" variant="secondary" size="md">
                   Back
@@ -75,10 +75,10 @@ function NotesViewerPage() {
   const note = Route.useLoaderData();
 
   return (
-    <PageTransition className="flex-1 min-h-[calc(100vh-12rem)] max-h-screen py-8">
-      <Section padding="py-8">
+    <PageTransition>
+      <Section>
         <Container className="max-w-4xl">
-          <div className="space-y-2 py-6 mb-8">
+          <div className="space-y-2 py-6 mb-2">
             <SlideUp delay={0}>
               <h1 className="text-4xl font-black tracking-tight">Note View</h1>
             </SlideUp>
@@ -92,9 +92,9 @@ function NotesViewerPage() {
 
           <article
             className="
-              max-w-4xl min-h-[calc(100vh-32rem)] mx-auto
+              max-w-4xl mx-auto
               border border-gray-300 dark:border-gray-600 rounded
-              prose dark:prose-invert py-6 px-12 space-y-4 mb-2
+              prose dark:prose-invert p-4 pb-0 space-y-4
             "
           >
             <header className="font-bold prose-2xl">{note.title}</header>
@@ -112,7 +112,7 @@ function NotesViewerPage() {
             </section>
           </article>
 
-          <section className="mt-6">
+          <section className="pb-6 mt-4">
             <ButtonGroup>
               <LinkButton to="/notes" variant="secondary" size="md">
                 Back

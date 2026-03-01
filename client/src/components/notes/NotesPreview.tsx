@@ -10,7 +10,7 @@ type NotesPreviewProps = {
 
 export function NotesPreview({ title, content }: NotesPreviewProps) {
   return (
-    <div className="h-full flex flex-col">
+    <div className="min-h-[30vh] md:min-h-[50vh] flex flex-col">
       <div className="pb-2 pl-1 font-medium text-sm">Note Preview</div>
 
       <Card

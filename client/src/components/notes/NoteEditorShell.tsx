@@ -73,9 +73,9 @@ export function NoteEditorShell({
 
   const dual = useMemo(
     () => (
-      <div className="grid h-full gap-4 md:grid-cols-2">
-        <div className="h-full min-h-0">{editor}</div>
-        <div className="h-full min-h-0">{preview}</div>
+      <div className="grid h-full gap-4 grid-rows-2 md:grid-cols-2">
+        <div className="h-full min-h-[30vh] md:min-h-[50vh]">{editor}</div>
+        <div className="h-full min-h-[30vh] md:min-h-[50vh]">{preview}</div>
       </div>
     ),
     [editor, preview],
@@ -83,84 +83,87 @@ export function NoteEditorShell({
 
   return (
     <PageTransition>
-      <Section padding="py-6">
-        <Container className="max-w-7xl">
-          <div className="flex flex-col gap-6">
-            {/* Header row */}
-            <div className="flex flex-col gap-3 md:flex-row md:items-baseline md:justify-between">
-              <SlideUp delay={0}>
-                <div className="space-y-2">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <h1 className="text-4xl font-black tracking-tight">
-                        {heading}
-                      </h1>
-                      {subheading && (
-                        <p className="text-muted-foreground">{subheading}</p>
-                      )}
-                    </div>
-
-                    {quickActionTo && (
-                      <Link
-                        to={quickActionTo}
-                        className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
-                      >
-                        <PlusCircle className="h-4 w-4" />
-                        New Note
-                      </Link>
-                    )}
-                  </div>
+      <Section padding="pt-8 pb-2">
+        <Container padding="px-4 md:px-6 lg:px-8" className="max-w-7xl">
+          {/* Header row */}
+          <div className="flex flex-col items-center gap-4 md:flex-row  md:items-baseline md:justify-between">
+            <SlideUp delay={0}>
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-1">
+                  <h1 className="text-4xl font-black tracking-tight">
+                    {heading}
+                  </h1>
+                  {subheading && (
+                    <p className="text-muted-foreground">{subheading}</p>
+                  )}
                 </div>
-              </SlideUp>
 
-              <SlideUp delay={40}>
-                <ToggleGroup
-                  type="single"
-                  value={mode}
-                  onValueChange={(v) => {
-                    if (v === "editor" || v === "preview" || v === "dual")
-                      setMode(v);
-                  }}
-                  className="justify-start rounded-md border bg-background p-1 shadow-sm"
+                {quickActionTo && (
+                  <Link
+                    to={quickActionTo}
+                    className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
+                  >
+                    <PlusCircle className="h-4 w-4" />
+                    New Note
+                  </Link>
+                )}
+              </div>
+            </SlideUp>
+
+            <SlideUp delay={40}>
+              <ToggleGroup
+                type="single"
+                value={mode}
+                onValueChange={(v) => {
+                  if (v === "editor" || v === "preview" || v === "dual")
+                    setMode(v);
+                }}
+                className="justify-start rounded-md border bg-background p-1 shadow-sm"
+              >
+                <ToggleGroupItem
+                  value="editor"
+                  aria-label="Editor"
+                  className="rounded-sm px-3"
                 >
-                  <ToggleGroupItem
-                    value="editor"
-                    aria-label="Editor"
-                    className="rounded-sm px-3"
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    Editor
-                  </ToggleGroupItem>
-                  <ToggleGroupItem
-                    value="preview"
-                    aria-label="Preview"
-                    className="rounded-sm px-3"
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    Preview
-                  </ToggleGroupItem>
-                  <ToggleGroupItem
-                    value="dual"
-                    aria-label="Dual"
-                    className="rounded-sm px-3"
-                  >
-                    <Columns2 className="h-4 w-4 mr-2" />
-                    Dual
-                  </ToggleGroupItem>
-                </ToggleGroup>
-              </SlideUp>
-            </div>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Editor
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="preview"
+                  aria-label="Preview"
+                  className="rounded-sm px-3"
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  Preview
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="dual"
+                  aria-label="Dual"
+                  className="rounded-sm px-3"
+                >
+                  <Columns2 className="h-4 w-4 mr-2" />
+                  Dual
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </SlideUp>
+          </div>
+        </Container>
+      </Section>
 
-            {/* Content area height + internal scrolling */}
-            <div className="flex-1 min-h-[calc(100vh-18rem)] py-8">
-              {mode === "dual" ? (
-                dual
-              ) : (
-                <div className="h-full min-h-0">
-                  {mode === "editor" ? editor : preview}
-                </div>
-              )}
-            </div>
+      <Section padding="pt-8">
+        <Container
+          padding="px-4 md:px-6 lg:px-8 pb-6"
+          className="bg-slate-100 max-w-7xl border-t"
+        >
+          {/* Content area height + internal scrolling */}
+          <div className="h-full min-h-0 py-8">
+            {mode === "dual" ? (
+              dual
+            ) : (
+              <div className="h-full min-h-[30vh] md:min-h-[50vh]">
+                {mode === "editor" ? editor : preview}
+              </div>
+            )}
           </div>
         </Container>
       </Section>
