@@ -37,7 +37,7 @@ export function buildHead({
 } {
   const fullTitle = title === SITE_NAME ? SITE_NAME : `${title} | ${SITE_NAME}`;
   const url = path ? `${BASE_URL}${path}` : BASE_URL;
-  const imageUrl = `${BASE_URL}/og/og-image.png`;
+  const imageUrl = `${BASE_URL}/og/ogImage.png`;
 
   const meta: MetaTag[] = [
     { title: fullTitle },
