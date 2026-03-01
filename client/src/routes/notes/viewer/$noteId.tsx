@@ -27,8 +27,8 @@ function NotesViewerSkeleton() {
   return (
     <PageTransition>
       <Section>
-        <Container className="max-w-4xl">
-          <div className="space-y-2 py-6 mb-2">
+        <Container padding="px-4 md:px-6 lg:px-8" className="max-w-7xl">
+          <div className="space-y-2">
             <SlideUp delay={0}>
               <h1 className="text-4xl font-black tracking-tight">Note View</h1>
             </SlideUp>
@@ -42,7 +42,6 @@ function NotesViewerSkeleton() {
 
           <article
             className="
-              max-w-4xl mx-auto
               border border-gray-300 dark:border-gray-600 rounded
               prose dark:prose-invert p-4 pb-0 space-y-4
             "
@@ -76,9 +75,9 @@ function NotesViewerPage() {
 
   return (
     <PageTransition>
-      <Section>
-        <Container className="max-w-4xl">
-          <div className="space-y-2 py-6 mb-2">
+      <Section padding="py-8">
+        <Container padding="px-4 md:px-6 lg:px-8" className="max-w-7xl">
+          <div className="space-y-2">
             <SlideUp delay={0}>
               <h1 className="text-4xl font-black tracking-tight">Note View</h1>
             </SlideUp>
@@ -89,14 +88,12 @@ function NotesViewerPage() {
               </p>
             </SlideUp>
           </div>
+        </Container>
+      </Section>
 
-          <article
-            className="
-              max-w-4xl mx-auto
-              border border-gray-300 dark:border-gray-600 rounded
-              prose dark:prose-invert p-4 pb-0 space-y-4
-            "
-          >
+      <Section padding="pt-4 pb-8">
+        <Container padding="px-4 md:px-6 lg:px-8" className="max-w-7xl">
+          <article className="mx-auto min-w-full border border-gray-300 dark:border-gray-600 rounded prose dark:prose-invert shadow p-8 space-y-2">
             <header className="font-bold prose-2xl">{note.title}</header>
 
             <section className="prose dark:prose-invert">
@@ -112,24 +109,22 @@ function NotesViewerPage() {
             </section>
           </article>
 
-          <section className="pb-6 mt-4">
-            <ButtonGroup>
-              <LinkButton to="/notes" variant="secondary" size="md">
-                Back
-              </LinkButton>
+          <ButtonGroup className="mt-6">
+            <LinkButton to="/notes" variant="secondary" size="md">
+              Back
+            </LinkButton>
 
-              <ButtonGroupSeparator />
+            <ButtonGroupSeparator />
 
-              <LinkButton
-                to="/notes/editor/$noteId"
-                params={{ noteId: String(note.id) }}
-                variant="primary"
-                size="md"
-              >
-                Edit
-              </LinkButton>
-            </ButtonGroup>
-          </section>
+            <LinkButton
+              to="/notes/editor/$noteId"
+              params={{ noteId: String(note.id) }}
+              variant="primary"
+              size="md"
+            >
+              Edit
+            </LinkButton>
+          </ButtonGroup>
         </Container>
       </Section>
     </PageTransition>

@@ -73,7 +73,7 @@ export function NoteEditorShell({
 
   const dual = useMemo(
     () => (
-      <div className="grid h-full gap-4 grid-rows-2 md:grid-cols-2">
+      <div className="h-full grid gap-4 grid-rows-2 md:grid-rows-1 md:grid-cols-2">
         <div className="h-full min-h-[30vh] md:min-h-[50vh]">{editor}</div>
         <div className="h-full min-h-[30vh] md:min-h-[50vh]">{preview}</div>
       </div>
@@ -151,10 +151,7 @@ export function NoteEditorShell({
       </Section>
 
       <Section padding="pt-8">
-        <Container
-          padding="px-4 md:px-6 lg:px-8 pb-6"
-          className="bg-slate-100 max-w-7xl border-t"
-        >
+        <Container padding="px-4 md:px-6 lg:px-8 pb-6" className="max-w-7xl">
           {/* Content area height + internal scrolling */}
           <div className="h-full min-h-0 py-8">
             {mode === "dual" ? (
