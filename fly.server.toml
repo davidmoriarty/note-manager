@@ -5,6 +5,9 @@ primary_region = "yyz"
 [build]
 dockerfile = "server/Dockerfile"
 
+[env]
+PRISMA_CLIENT_ENGINE_TYPE = "library"
+
 [http_service]
 internal_port = 3000
 force_https = true
@@ -13,7 +16,7 @@ auto_stop_machines = "off"
 min_machines_running = 1
 
 [[http_service.checks]]
-interval = "15s"
+interval = "30s"
 timeout = "5s"
 grace_period = "10s"
 method = "GET"
