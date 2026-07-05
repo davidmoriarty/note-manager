@@ -106,6 +106,43 @@ export const submitLogin: AuthSubmit<LoginValues> = async (values) => {
   }
 };
 
+export const submitDemoLogin: AuthSubmit<Record<string, never>> = async () => {
+  try {
+    const res = await authApi.demo();
+
+    const token = res.token ?? null;
+    if (token) setAuthToken(token);
+
+    useAuth.setState({
+      user: {
+        id: res.id,
+        email: res.email,
+        name: res.name,
+      },
+      token,
+      isDemoUser: true,
+    });
+
+    localStorage.setItem(
+      "auth",
+      JSON.stringify({
+        user: {
+          id: res.id,
+          email: res.email,
+          name: res.name,
+        },
+        token,
+        isDemoUser: true,
+      }),
+    );
+
+    return { ok: true };
+  } catch (err: unknown) {
+    if (err instanceof Error) return { ok: false, fieldError: err.message };
+    return { ok: false, formError: "Demo login failed" };
+  }
+};
+
 export const submitLogout: AuthSubmit<LogoutValues> = async () => {
   try {
     // Call store logout (clears state + localStorage + server cookie)

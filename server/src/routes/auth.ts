@@ -1,6 +1,7 @@
 // server/src/routes/auth.ts
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
+import { createDemoSession } from "../lib/demo";
 import {
   getExpiredRefreshCookieOptions,
   getRefreshCookieOptions,
@@ -71,6 +72,23 @@ export const authRoutes = new Hono()
       email: user.email,
       name: user.name ?? "",
       token: accessToken,
+    };
+
+    return c.json(dto, 200);
+  })
+
+  // Demo Login
+  .post("/demo", async (c) => {
+    const { user, accessToken, refreshToken } = await createDemoSession();
+
+    setCookie(c, "refresh", refreshToken, getRefreshCookieOptions());
+
+    const dto = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      token: accessToken,
+      isDemoUser: true,
     };
 
     return c.json(dto, 200);

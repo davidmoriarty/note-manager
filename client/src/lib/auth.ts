@@ -6,6 +6,7 @@ import type { UserBaseDto, UserDto } from "@shared";
 type AuthState = {
   user: UserBaseDto | null;
   token: string | null;
+  isDemoUser: boolean;
 
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -20,6 +21,7 @@ export const useAuth = create<AuthState>((set) => {
   return {
     user: parsed?.user ?? null,
     token: parsed?.token ?? null,
+    isDemoUser: parsed?.isDemoUser ?? false,
 
     setToken(token) {
       set({ token });
@@ -47,6 +49,7 @@ export const useAuth = create<AuthState>((set) => {
           name: res.name,
         },
         token,
+        isDemoUser: false,
       });
 
       // Persist user only
@@ -59,13 +62,14 @@ export const useAuth = create<AuthState>((set) => {
             name: res.name,
           },
           token,
+          isDemoUser: false,
         }),
       );
     },
 
     async logout() {
       // clear client state immediately
-      set({ user: null, token: null });
+      set({ user: null, token: null, isDemoUser: false });
       localStorage.removeItem("auth");
 
       // best-effort server logout (don’t block UI)

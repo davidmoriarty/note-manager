@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { LinkButton } from "@/components/ui/LinkButton";
-import { submitLogin } from "@/lib/auth-submit";
+import { submitDemoLogin, submitLogin } from "@/lib/auth-submit";
 import { buildHead } from "@/lib/meta";
 
 function LoginPage() {
@@ -36,6 +36,22 @@ function LoginPage() {
         ...prev,
         ...result.fieldErrors,
         form: result.formError ?? result.fieldErrors?.form ?? "Login failed",
+      }));
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    setErrors({ email: null, password: null, form: null });
+
+    const result = await submitDemoLogin({});
+
+    if (result.ok) {
+      navigate({ to: "/notes" });
+    } else {
+      setErrors((prev) => ({
+        ...prev,
+        form:
+          result.formError ?? result.fieldErrors?.form ?? "Demo login failed",
       }));
     }
   };
@@ -96,6 +112,15 @@ function LoginPage() {
               <Field className="mt-4">
                 <Button type="submit" variant="primary" size="lg">
                   Sign in
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  onClick={handleDemoLogin}
+                >
+                  Try Demo
                 </Button>
               </Field>
 

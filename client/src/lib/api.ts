@@ -3,7 +3,11 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 import { setAuthToken, useAuth } from "./auth";
 import type { UserDto, UserBaseDto, MeStatsDto, NoteDto } from "@shared";
-type AuthLoginDto = UserBaseDto & { token: string };
+
+type AuthLoginDto = UserBaseDto & {
+  token: string;
+  isDemoUser?: boolean;
+};
 
 let refreshingToken: Promise<string | null> | null = null;
 
@@ -129,6 +133,11 @@ export const authApi = {
     request<AuthLoginDto>("/auth/login", {
       method: "POST",
       body: JSON.stringify(data),
+    }),
+
+  demo: () =>
+    request<AuthLoginDto>("/auth/demo", {
+      method: "POST",
     }),
 
   me: () => request<UserDto>("/auth/me"),

@@ -12,6 +12,7 @@ import { LinkButton } from "@/components/ui/LinkButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toastMessage } from "@/components/ui/toast";
 import type { NoteDto } from "@shared";
+import { useAuth } from "@/lib/auth";
 import { notesApi } from "@/lib/api";
 import { buildHead } from "@/lib/meta";
 import { requireAuth } from "@/lib/route-guard";
@@ -22,6 +23,8 @@ function NotesOverviewPage() {
   const [notes, setNotes] = useState<NoteDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [noteToDelete, setNoteToDelete] = useState<number | null>(null);
+  const isDemoUser = useAuth((state) => state.isDemoUser);
+  const [showDemoNotice, setShowDemoNotice] = useState(isDemoUser);
 
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
     () => (localStorage.getItem("noteSort") as "asc" | "desc") ?? "asc",
@@ -99,6 +102,33 @@ function NotesOverviewPage() {
               </LinkButton>
             </SlideUp>
           </div>
+
+          {isDemoUser && showDemoNotice && (
+            <div
+              className="mx-4 mb-6 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 shadow-sm"
+              role="note"
+              aria-label="Demo mode notice"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="text-sm">
+                  <p>
+                    <strong>Demo mode:</strong> This is a temporary demo
+                    workspace.
+                  </p>
+                  <p>Please don't enter sensitive information.</p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowDemoNotice(false)}
+                  className="shrink-0 rounded px-2 text-lg leading-none text-amber-950 hover:bg-amber-100"
+                  aria-label="Dismiss notice"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          )}
 
           {/*Notes sorting toggles*/}
           <ToggleGroup
