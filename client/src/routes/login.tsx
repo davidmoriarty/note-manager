@@ -5,6 +5,8 @@ import { PageTransition } from "@/components/motion/PageTransition";
 import { SlideUp } from "@/components/motion/SlideUp";
 import { Section } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
+import { AuthLoadingOverlay } from "@/components/auth/AuthLoadingOverlay";
+import { DemoButton } from "@/components/demo/DemoButton";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -12,9 +14,35 @@ import { LinkButton } from "@/components/ui/LinkButton";
 import { submitDemoLogin, submitLogin } from "@/lib/auth-submit";
 import { buildHead } from "@/lib/meta";
 
+const authOverlayContent = {
+  login: {
+    title: "Signing you in...",
+    steps: [
+      "Verifying credentials",
+      "Creating secure session",
+      "Loading your workspace",
+      "Opening your workspace...",
+    ],
+  },
+  demo: {
+    title: "Preparing your demo workspace...",
+    steps: [
+      "Creating temporary account",
+      "Loading sample notes",
+      "Signing you in",
+      "Opening your workspace...",
+    ],
+  },
+} as const;
+
 function LoginPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
+  const [authLoadingMode, setAuthLoadingMode] = useState<
+    "login" | "demo" | null
+  >(null);
+  const isAuthLoading = authLoadingMode !== null;
+  const [authSucceeded, setAuthSucceeded] = useState(false);
   const [errors, setErrors] = useState({
     form: null as string | null,
     email: null as string | null,
@@ -25,39 +53,59 @@ function LoginPage() {
     e.preventDefault();
 
     setErrors({ email: null, password: null, form: null });
+    setAuthLoadingMode("login");
 
     const result = await submitLogin(form);
 
     if (result.ok) {
-      // Redirect to notes overview
-      navigate({ to: "/notes" });
-    } else {
-      setErrors((prev) => ({
-        ...prev,
-        ...result.fieldErrors,
-        form: result.formError ?? result.fieldErrors?.form ?? "Login failed",
-      }));
+      setAuthSucceeded(true);
+      return;
     }
+
+    setAuthLoadingMode(null);
+    setErrors((prev) => ({
+      ...prev,
+      ...result.fieldErrors,
+      form: result.formError ?? result.fieldErrors?.form ?? "Login failed",
+    }));
   };
 
   const handleDemoLogin = async () => {
     setErrors({ email: null, password: null, form: null });
+    setAuthLoadingMode("demo");
 
     const result = await submitDemoLogin({});
 
     if (result.ok) {
-      navigate({ to: "/notes" });
-    } else {
-      setErrors((prev) => ({
-        ...prev,
-        form:
-          result.formError ?? result.fieldErrors?.form ?? "Demo login failed",
-      }));
+      setAuthSucceeded(true);
+      return;
     }
+
+    setAuthLoadingMode(null);
+    setErrors((prev) => ({
+      ...prev,
+      form: result.formError ?? result.fieldErrors?.form ?? "Demo login failed",
+    }));
   };
+
+  const overlay =
+    authLoadingMode === null ? null : authOverlayContent[authLoadingMode];
 
   return (
     <PageTransition className="min-h-[calc(100vh-10rem)]">
+      {overlay && (
+        <AuthLoadingOverlay
+          open={isAuthLoading}
+          title={overlay.title}
+          steps={overlay.steps}
+          onComplete={() => {
+            if (authSucceeded) {
+              navigate({ to: "/notes", replace: true });
+            }
+          }}
+        />
+      )}
+
       <Section padding="pt-8 pb-4">
         <Container padding="px-4 md:px-6 lg:px-8" className="max-w-7xl">
           <div className="space-y-2">
@@ -110,18 +158,20 @@ function LoginPage() {
               </Field>
 
               <Field className="mt-4">
-                <Button type="submit" variant="primary" size="lg">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  disabled={isAuthLoading}
+                >
                   Sign in
                 </Button>
 
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="lg"
+                <DemoButton
+                  loading={authLoadingMode === "demo"}
                   onClick={handleDemoLogin}
-                >
-                  Try Demo
-                </Button>
+                  disabled={isAuthLoading}
+                />
               </Field>
 
               {errors.form && (

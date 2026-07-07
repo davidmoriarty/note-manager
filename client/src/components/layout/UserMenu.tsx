@@ -1,6 +1,7 @@
 // client/src/components/layout/UserMenu.tsx
 import { useNavigate } from "@tanstack/react-router";
 import { LogIn, LogOut, User, UserPlus } from "lucide-react";
+import { DemoBadge } from "../demo/DemoBadge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,7 +15,7 @@ import { submitLogout } from "@/lib/auth-submit";
 export function UserMenu() {
   const navigate = useNavigate();
 
-  const { user } = useAuth();
+  const { user, isDemoUser } = useAuth();
   const label = user?.name ?? user?.email ?? "Account";
 
   const handleLogout = async () => {
@@ -35,7 +36,10 @@ export function UserMenu() {
           size="sm"
           className="text-foreground hover:no-underline"
         >
-          {label}
+          <span className="flex items-center gap-2">
+            <span>{label}</span>
+            {isDemoUser && <DemoBadge />}
+          </span>
         </Button>
       </DropdownMenuTrigger>
 

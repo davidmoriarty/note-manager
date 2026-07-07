@@ -11,24 +11,40 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { LinkButton } from "@/components/ui/LinkButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toastMessage } from "@/components/ui/toast";
+import { DemoNotice } from "@/components/demo/DemoNotice";
 import type { NoteDto } from "@shared";
 import { useAuth } from "@/lib/auth";
 import { notesApi } from "@/lib/api";
 import { buildHead } from "@/lib/meta";
 import { requireAuth } from "@/lib/route-guard";
 
-const SKELETON_KEYS = Array.from({ length: 8 }, (_, i) => `skeleton-${i}`);
-
 function NotesOverviewPage() {
   const [notes, setNotes] = useState<NoteDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [noteToDelete, setNoteToDelete] = useState<number | null>(null);
   const isDemoUser = useAuth((state) => state.isDemoUser);
-  const [showDemoNotice, setShowDemoNotice] = useState(isDemoUser);
+
+  const skeletonCount = isDemoUser ? 3 : 8;
+  const skeletonKeys = Array.from(
+    { length: skeletonCount },
+    (_, i) => `skeleton-${i}`,
+  );
+
+  const [showDemoNotice, setShowDemoNotice] = useState(false);
 
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
     () => (localStorage.getItem("noteSort") as "asc" | "desc") ?? "asc",
   );
+
+  useEffect(() => {
+    if (!isDemoUser) return;
+
+    const timer = setTimeout(() => {
+      setShowDemoNotice(true);
+    }, 700);
+
+    return () => clearTimeout(timer);
+  }, [isDemoUser]);
 
   useEffect(() => {
     localStorage.setItem("noteSort", sortOrder);
@@ -103,30 +119,18 @@ function NotesOverviewPage() {
             </SlideUp>
           </div>
 
-          {isDemoUser && showDemoNotice && (
+          {isDemoUser && (
             <div
-              className="mx-4 mb-6 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 shadow-sm"
-              role="note"
-              aria-label="Demo mode notice"
+              className={`mx-4 mb-6 transition-all duration-300 ease-out ${
+                showDemoNotice
+                  ? "translate-y-0 opacity-100"
+                  : "-translate-y-2 opacity-0"
+              }`}
             >
-              <div className="flex items-start justify-between gap-4">
-                <div className="text-sm">
-                  <p>
-                    <strong>Demo mode:</strong> This is a temporary demo
-                    workspace.
-                  </p>
-                  <p>Please don't enter sensitive information.</p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setShowDemoNotice(false)}
-                  className="shrink-0 rounded px-2 text-lg leading-none text-amber-950 hover:bg-amber-100"
-                  aria-label="Dismiss notice"
-                >
-                  ×
-                </button>
-              </div>
+              <DemoNotice
+                open={true}
+                onDismiss={() => setShowDemoNotice(false)}
+              />
             </div>
           )}
 
@@ -163,7 +167,7 @@ function NotesOverviewPage() {
             {/* Notes Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
               {isLoading
-                ? SKELETON_KEYS.map((key) => (
+                ? skeletonKeys.map((key) => (
                     <div
                       key={key}
                       className="flex flex-col justify-between h-full border rounded-md p-4"

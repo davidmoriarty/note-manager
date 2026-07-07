@@ -9,14 +9,45 @@ const DEMO_USER_TTL_MS = 24 * 60 * 60 * 1000;
 export async function cleanupExpiredDemoUsers() {
   const cutoff = new Date(Date.now() - DEMO_USER_TTL_MS);
 
-  await prisma.user.deleteMany({
+  const expiredDemoUsers = await prisma.user.findMany({
     where: {
       isDemoUser: true,
       createdAt: {
         lt: cutoff,
       },
     },
+    select: { id: true },
   });
+
+  const expiredDemoUserIds = expiredDemoUsers.map((user) => user.id);
+
+  if (expiredDemoUserIds.length === 0) return;
+
+  await prisma.$transaction([
+    prisma.note.deleteMany({
+      where: {
+        authorId: {
+          in: expiredDemoUserIds,
+        },
+      },
+    }),
+
+    prisma.refreshToken.deleteMany({
+      where: {
+        userId: {
+          in: expiredDemoUserIds,
+        },
+      },
+    }),
+
+    prisma.user.deleteMany({
+      where: {
+        id: {
+          in: expiredDemoUserIds,
+        },
+      },
+    }),
+  ]);
 }
 
 export async function createDemoSession() {
