@@ -5,6 +5,7 @@ import { ArrowDownAZ, ArrowUpAZ } from "lucide-react";
 import { NoteCard } from "@/components/notes/NoteCard";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { SlideUp } from "@/components/motion/SlideUp";
+import { AnimatedCollapse } from "@/components/motion/AnimatedCollapse";
 import { Section } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -120,18 +121,16 @@ function NotesOverviewPage() {
           </div>
 
           {isDemoUser && (
-            <div
-              className={`mx-4 mb-6 transition-all duration-300 ease-out ${
-                showDemoNotice
-                  ? "translate-y-0 opacity-100"
-                  : "-translate-y-2 opacity-0"
-              }`}
+            <AnimatedCollapse
+              open={showDemoNotice}
+              className="mx-4"
+              openClassName="mb-6"
             >
               <DemoNotice
                 open={true}
                 onDismiss={() => setShowDemoNotice(false)}
               />
-            </div>
+            </AnimatedCollapse>
           )}
 
           {/*Notes sorting toggles*/}
