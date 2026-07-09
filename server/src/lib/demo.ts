@@ -19,7 +19,7 @@ export async function cleanupExpiredDemoUsers() {
     select: { id: true },
   });
 
-  const expiredDemoUserIds = expiredDemoUsers.map((user) => user.id);
+  const expiredDemoUserIds = expiredDemoUsers.map(({ id }) => id);
 
   if (expiredDemoUserIds.length === 0) return;
 

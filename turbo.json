@@ -53,7 +53,7 @@
       "env": ["NODE_ENV"]
     },
     "type-check": {
-      "dependsOn": [],
+      "dependsOn": ["^build"],
       "inputs": [
         "src/**/*.ts",
         "src/**/*.tsx",
