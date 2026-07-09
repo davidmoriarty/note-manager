@@ -7,6 +7,9 @@
   "scripts": {
     "build": "tsc -b",
     "type-check": "tsc --noEmit",
+    "prisma:generate": "bunx --bun prisma generate",
+    "prisma:migrate": "bunx --bun prisma migrate dev",
+    "prisma:studio": "bunx --bun prisma studio",
     "test": "echo \"no tests\"",
     "start": "bun /app/server/dist/index.js",
     "dev": "bun --watch src/dev.ts & tsc --watch"
