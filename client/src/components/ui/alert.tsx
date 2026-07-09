@@ -8,31 +8,42 @@ const alertVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-card text-card-foreground",
-				success: "bg-teal-100 text-teal-900 border-teal-200",
-				warning: "bg-yellow-100 text-yellow-900 border-yellow-200",
-				info: "bg-sky-100 text-sky-900 border-sky-200",
-				error: "bg-purple-100 text-purple-900 border-purple-200",
+        soft: "",
+        outline: "bg-transparent",
+      },
+      tone: {
+        default:
+          "border-border bg-card text-card-foreground",
+        info:
+          "border-sky-300 bg-sky-100 text-sky-900 dark:border-sky-700 dark:bg-sky-950 dark:text-sky-100",
+        success:
+          "border-teal-300 bg-teal-100 text-teal-900 dark:border-teal-700 dark:bg-teal-950 dark:text-teal-100",
+        warning:
+          "border-yellow-300 bg-yellow-100 text-yellow-900 dark:border-yellow-700 dark:bg-yellow-950 dark:text-yellow-100",
+        error:
+          "border-purple-300 bg-purple-100 text-purple-900 dark:border-purple-700 dark:bg-purple-950 dark:text-purple-100",
         destructive:
-          "bg-card text-destructive *:data-[slot=alert-description]:text-destructive/90 [&>svg]:text-current",
+          "border-red-300 bg-red-100 text-red-900 dark:border-red-700 dark:bg-red-950 dark:text-red-100",
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: "soft",
+      tone: "default",
     },
-  }
-)
+  },
+);
 
 function Alert({
   className,
   variant,
+  tone,
   ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof alertVariants>) {
   return (
     <div
       data-slot="alert"
       role="alert"
-      className={cn(alertVariants({ variant }), className)}
+      className={cn(alertVariants({ variant, tone }), className)}
       {...props}
     />
   )

@@ -12,9 +12,7 @@ export function AuthFormShell({ children }: AuthFormShellProps) {
   return (
     <Container
       padding="p-8"
-      className={cn(
-        "max-w-xl bg-slate-50 sm:max-w-2xl sm:rounded lg:max-w-3xl",
-      )}
+      className={cn("max-w-xl sm:max-w-2xl sm:rounded lg:max-w-3xl")}
     >
       {children}
     </Container>

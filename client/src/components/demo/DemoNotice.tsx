@@ -25,7 +25,7 @@ export function DemoNotice({
   if (!open) return null;
 
   return (
-    <Alert variant="info" className="max-w-md">
+    <Alert tone="info" className="max-w-md">
       <AlertTitle className="font-bold text-lg">{title}</AlertTitle>
       <AlertDescription className="font-medium">{description}</AlertDescription>
       <AlertAction>
