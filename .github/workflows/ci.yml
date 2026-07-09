@@ -17,6 +17,8 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: cd server && bun run prisma:generate
+        env:
+          DATABASE_URL: postgresql://ci:ci@localhost:5173/ci
       - run: bun run lint
       - run: bun run type-check
       - run: bun run test
