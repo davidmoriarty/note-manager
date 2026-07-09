@@ -1,15 +1,17 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Container } from "@/components/layout/Container";
-import { Section } from "@/components/layout/Section";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { SlideUp } from "@/components/motion/SlideUp";
+import { Section } from "@/components/layout/Section";
+import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
+import { AuthFormShell } from "@/components/auth/AuthFormShell";
 import { Field, FieldError, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { LinkButton } from "@/components/ui/LinkButton";
 import { submitRegister } from "@/lib/auth-submit";
 import { buildHead } from "@/lib/meta";
+import { cn } from "@/lib/utils";
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -64,53 +66,77 @@ function RegisterPage() {
         </Container>
       </Section>
 
-      <Section padding="py-8">
-        <Container className="max-w-3xl bg-slate-50 sm:rounded p-8">
+      <Section padding="pt-8 pb-12 md:pt-12 lg:pt-16">
+        <AuthFormShell>
           <form onSubmit={handleSubmit}>
             <FieldSet>
               <Field>
-                <FieldLabel htmlFor="name">Full name</FieldLabel>
+                <FieldLabel htmlFor="name" className="sr-only">
+                  Full name
+                </FieldLabel>
+
                 <Input
                   id="name"
                   type="text"
+                  placeholder="Full name"
                   value={form.name}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, name: e.target.value }))
                   }
-                  className={errors.name ? "border-destructive" : ""}
+                  className={cn(
+                    "placeholder:text-muted-foreground",
+                    errors.name && "border-destructive",
+                  )}
                 />
+
                 <FieldError>{errors.name}</FieldError>
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <FieldLabel htmlFor="email" className="sr-only">
+                  Email
+                </FieldLabel>
+
                 <Input
                   id="email"
                   type="email"
+                  placeholder="Email"
                   value={form.email}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, email: e.target.value }))
                   }
-                  className={errors.email ? "border-destructive" : ""}
+                  className={cn(
+                    "placeholder:text-muted-foreground",
+                    errors.email && "border-destructive",
+                  )}
                 />
+
                 <FieldError>{errors.email}</FieldError>
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <FieldLabel htmlFor="password" className="sr-only">
+                  Password
+                </FieldLabel>
+
                 <Input
                   id="password"
                   type="password"
+                  placeholder="Password"
                   value={form.password}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, password: e.target.value }))
                   }
-                  className={errors.password ? "border-destructive" : ""}
+                  className={cn(
+                    "placeholder:text-muted-foreground",
+                    errors.password && "border-destructive",
+                  )}
                 />
+
                 <FieldError>{errors.password}</FieldError>
               </Field>
 
-              <Field className="mt-4">
+              <Field>
                 <Button type="submit" variant="primary" size="lg">
                   Sign up
                 </Button>
@@ -118,13 +144,14 @@ function RegisterPage() {
             </FieldSet>
           </form>
 
-          <div className="flex flex-row items-center justify-center text-center gap-x-4 pt-6">
+          <div className="flex flex-row items-center justify-center gap-x-4 pt-6 text-center">
             <p>Already have an account?</p>
+
             <LinkButton to="/login" variant="ghost" size="sm">
               Sign in
             </LinkButton>
           </div>
-        </Container>
+        </AuthFormShell>
       </Section>
     </PageTransition>
   );

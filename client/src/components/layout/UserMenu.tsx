@@ -1,5 +1,5 @@
 // client/src/components/layout/UserMenu.tsx
-import { useNavigate } from "@tanstack/react-router";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 import { LogIn, LogOut, User, UserPlus } from "lucide-react";
 import { DemoBadge } from "../demo/DemoBadge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,12 @@ import { submitLogout } from "@/lib/auth-submit";
 
 export function UserMenu() {
   const navigate = useNavigate();
+
+  const location = useLocation();
+
+  const isLoginPage = location.pathname === "/login";
+  const isRegisterPage = location.pathname === "/register";
+  const isProfilePage = location.pathname === "/profile";
 
   const { user, isDemoUser } = useAuth();
   const label = user?.name ?? user?.email ?? "Account";
@@ -37,8 +43,14 @@ export function UserMenu() {
           className="text-foreground hover:no-underline"
         >
           <span className="flex items-center gap-2">
-            <span>{label}</span>
-            {isDemoUser && <DemoBadge />}
+            {!isDemoUser && <span>{label}</span>}
+
+            {isDemoUser ? (
+              <>
+                <span className="hidden sm:inline">{label}</span>
+                <DemoBadge />
+              </>
+            ) : null}
           </span>
         </Button>
       </DropdownMenuTrigger>
@@ -46,14 +58,16 @@ export function UserMenu() {
       <DropdownMenuContent align="end" className="w-48">
         {user ? (
           <>
-            <DropdownMenuItem
-              onSelect={() => {
-                navigate({ to: "/profile" });
-              }}
-            >
-              <User className="mr-2 h-4 w-4" />
-              Profile
-            </DropdownMenuItem>
+            {!isProfilePage && (
+              <DropdownMenuItem
+                onSelect={() => {
+                  navigate({ to: "/profile" });
+                }}
+              >
+                <User className="mr-2 h-4 w-4" />
+                Profile
+              </DropdownMenuItem>
+            )}
 
             <DropdownMenuItem onSelect={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
@@ -62,22 +76,27 @@ export function UserMenu() {
           </>
         ) : (
           <>
-            <DropdownMenuItem
-              onSelect={() => {
-                navigate({ to: "/login" });
-              }}
-            >
-              <LogIn className="mr-2 h-4 w-4" />
-              Sign in
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={() => {
-                navigate({ to: "/register" });
-              }}
-            >
-              <UserPlus className="mr-2 h-4 w-4" />
-              Sign up
-            </DropdownMenuItem>
+            {!isLoginPage && (
+              <DropdownMenuItem
+                onSelect={() => {
+                  navigate({ to: "/login" });
+                }}
+              >
+                <LogIn className="mr-2 h-4 w-4" />
+                Sign in
+              </DropdownMenuItem>
+            )}
+
+            {!isRegisterPage && (
+              <DropdownMenuItem
+                onSelect={() => {
+                  navigate({ to: "/register" });
+                }}
+              >
+                <UserPlus className="mr-2 h-4 w-4" />
+                Sign up
+              </DropdownMenuItem>
+            )}
           </>
         )}
       </DropdownMenuContent>

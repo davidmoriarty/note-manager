@@ -5,6 +5,7 @@ import { PageTransition } from "@/components/motion/PageTransition";
 import { SlideUp } from "@/components/motion/SlideUp";
 import { Section } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
+import { AuthFormShell } from "@/components/auth/AuthFormShell";
 import { AuthLoadingOverlay } from "@/components/auth/AuthLoadingOverlay";
 import { DemoButton } from "@/components/demo/DemoButton";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { LinkButton } from "@/components/ui/LinkButton";
 import { submitDemoLogin, submitLogin } from "@/lib/auth-submit";
 import { buildHead } from "@/lib/meta";
+import { cn } from "@/lib/utils";
 
 const authOverlayContent = {
   login: {
@@ -122,42 +124,55 @@ function LoginPage() {
         </Container>
       </Section>
 
-      <Section padding="py-8">
-        <Container
-          padding="px-4 md:px-6 lg:px-8"
-          className="max-w-3xl sm:rounded"
-        >
+      <Section padding="pt-8 pb-12 md:pt-12 lg:pt-16">
+        <AuthFormShell>
           <form onSubmit={handleSubmit}>
             <FieldSet>
               <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <FieldLabel htmlFor="email" className="sr-only">
+                  Email
+                </FieldLabel>
+
                 <Input
                   id="email"
                   type="email"
+                  placeholder="Email"
                   value={form.email}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, email: e.target.value }))
                   }
-                  className={errors.email ? "border-destructive" : ""}
+                  className={cn(
+                    "placeholder:text-muted-foreground",
+                    errors.email && "border-destructive",
+                  )}
                 />
+
                 <FieldError>{errors.email}</FieldError>
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <FieldLabel htmlFor="password" className="sr-only">
+                  Password
+                </FieldLabel>
+
                 <Input
                   id="password"
                   type="password"
+                  placeholder="Password"
                   value={form.password}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, password: e.target.value }))
                   }
-                  className={errors.password ? "border-destructive" : ""}
+                  className={cn(
+                    "placeholder:text-muted-foreground",
+                    errors.password && "border-destructive",
+                  )}
                 />
+
                 <FieldError>{errors.password}</FieldError>
               </Field>
 
-              <Field className="mt-4">
+              <Field>
                 <Button
                   type="submit"
                   variant="primary"
@@ -182,13 +197,14 @@ function LoginPage() {
             </FieldSet>
           </form>
 
-          <div className="flex flex-row items-center justify-center text-center gap-x-4 pt-6">
+          <div className="flex flex-row items-center justify-center gap-x-4 pt-6 text-center">
             <p>Don't have an account?</p>
+
             <LinkButton to="/register" variant="ghost" size="sm">
               Sign up
             </LinkButton>
           </div>
-        </Container>
+        </AuthFormShell>
       </Section>
     </PageTransition>
   );

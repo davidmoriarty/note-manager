@@ -1,5 +1,6 @@
 // client/src/components/ui/Container.tsx
 import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 type Props = {
   children: ReactNode;
@@ -7,9 +8,9 @@ type Props = {
   className?: string;
 };
 
-export function Container({ children, padding = "", className = "" }: Props) {
+export function Container({ children, padding, className }: Props) {
   return (
-    <div className={`container mx-auto ${padding} ${className}`}>
+    <div className={cn("container mx-auto", padding, className)}>
       {children}
     </div>
   );

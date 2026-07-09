@@ -7,7 +7,7 @@ type Props = {
   className?: string;
 };
 
-export function CardWrapper({ children, className = "" }: Props) {
+export function CardWrapper({ children, className }: Props) {
   return (
     <div
       className={cn(

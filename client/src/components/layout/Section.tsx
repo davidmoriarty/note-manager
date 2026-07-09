@@ -1,5 +1,6 @@
 // client/src/components/ui/Section.tsx
 import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 type Props = {
   children: ReactNode;
@@ -7,8 +8,8 @@ type Props = {
   padding?: string;
 };
 
-export function Section({ children, className = "", padding = "" }: Props) {
+export function Section({ children, padding, className }: Props) {
   return (
-    <section className={`w-full ${padding} ${className}`}>{children}</section>
+    <section className={cn("w-full", padding, className)}>{children}</section>
   );
 }
