@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Turbo / TypeScript caches
+.turbo/
+**/.turbo/
+*.tsbuildinfo
+**/*.tsbuildinfo
+
+# Git
+.git/
+.gitignore
+
+# Build output
+dist/
+build/
+client/dist/
+server/dist/
+shared/dist/
+
+# Coverage
+coverage/
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
