@@ -4,9 +4,12 @@ import { AuthLoader } from "./auth-loader";
 import { useAuth } from "./auth";
 
 export async function requireAuth(currentPath?: string) {
-  await AuthLoader();
+  let { token } = useAuth.getState();
 
-  const { token } = useAuth.getState();
+  if (!token) {
+    await AuthLoader();
+    token = useAuth.getState().token;
+  }
 
   if (!token) {
     throw redirect({
