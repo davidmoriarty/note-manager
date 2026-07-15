@@ -7,10 +7,13 @@ type AuthState = {
   user: UserBaseDto | null;
   token: string | null;
   isDemoUser: boolean;
+  isAuthTransitioning: boolean;
 
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   setToken: (token: string | null) => void;
+  setAuthTransitioning: (isAuthTransitioning: boolean) => void;
+  clearSession: () => void;
 };
 
 // Initialize store with localStorage persistence
@@ -21,6 +24,7 @@ export const useAuth = create<AuthState>((set) => {
   return {
     user: parsed?.user ?? null,
     token: parsed?.token ?? null,
+    isAuthTransitioning: false,
     isDemoUser: parsed?.isDemoUser ?? false,
 
     setToken(token) {
@@ -34,6 +38,21 @@ export const useAuth = create<AuthState>((set) => {
           token,
         }),
       );
+    },
+
+    setAuthTransitioning(isAuthTransitioning) {
+      set({ isAuthTransitioning });
+    },
+
+    clearSession() {
+      set({
+        user: null,
+        token: null,
+        isDemoUser: false,
+        isAuthTransitioning: false,
+      });
+
+      localStorage.removeItem("auth");
     },
 
     async login(email: string, password: string) {
@@ -69,7 +88,12 @@ export const useAuth = create<AuthState>((set) => {
 
     async logout() {
       // clear client state immediately
-      set({ user: null, token: null, isDemoUser: false });
+      set({
+        user: null,
+        token: null,
+        isDemoUser: false,
+        isAuthTransitioning: false,
+      });
       localStorage.removeItem("auth");
 
       // best-effort server logout (don’t block UI)
@@ -105,8 +129,7 @@ export async function syncCurrentUser(): Promise<UserDto | null> {
 
     return user;
   } catch {
-    useAuth.setState({ user: null, token: null });
-    localStorage.removeItem("auth");
+    useAuth.getState().clearSession();
     return null;
   }
 }

@@ -21,8 +21,12 @@ export function UserMenu() {
   const isRegisterPage = location.pathname === "/register";
   const isProfilePage = location.pathname === "/profile";
 
-  const { user, isDemoUser } = useAuth();
-  const label = user?.name ?? user?.email ?? "Account";
+  const { user, isDemoUser, isAuthTransitioning } = useAuth();
+
+  const visibleUser = isAuthTransitioning ? null : user;
+  const visibleIsDemoUser = isAuthTransitioning ? false : isDemoUser;
+
+  const label = visibleUser?.name ?? visibleUser?.email ?? "Account";
 
   const handleLogout = async () => {
     const result = await submitLogout({});
@@ -43,9 +47,9 @@ export function UserMenu() {
           className="text-foreground hover:no-underline"
         >
           <span className="flex items-center gap-2">
-            {!isDemoUser && <span>{label}</span>}
+            {!visibleIsDemoUser && <span>{label}</span>}
 
-            {isDemoUser ? (
+            {visibleIsDemoUser ? (
               <>
                 <span className="hidden sm:inline">{label}</span>
                 <DemoBadge />
@@ -56,7 +60,7 @@ export function UserMenu() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-48">
-        {user ? (
+        {visibleUser ? (
           <>
             {!isProfilePage && (
               <DropdownMenuItem

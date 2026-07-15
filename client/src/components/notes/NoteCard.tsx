@@ -1,4 +1,5 @@
 // client/src/components/notes/NoteCard.tsx
+import { Eye } from "lucide-react";
 import type { NoteDto } from "@shared";
 import { useNavigate } from "@tanstack/react-router";
 import { DeleteNoteDialog } from "@/components/notes/DeleteNoteDialog";
@@ -8,7 +9,6 @@ import {
   CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -46,30 +46,24 @@ export function NoteCard({
   });
 
   return (
-    <Card className="flex h-full flex-col justify-between pt-4">
+    <Card className="flex flex-col pt-4">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold leading-snug line-clamp-2">
+        <CardTitle className="line-clamp-2 text-lg font-semibold leading-snug">
           {note.title || "Untitled Note"}
         </CardTitle>
+
         {note.createdAt && (
           <CardDescription className="text-sm text-muted-foreground">
-            {formatDate(note.createdAt)}
+            Created {formatDate(note.createdAt)}
           </CardDescription>
         )}
-      </CardHeader>
 
-      <CardContent className="text-sm text-muted-foreground min-h-27.5">
-        <p className="line-clamp-6 whitespace-pre-wrap wrap-break-word font-mono text-xs leading-relaxed">
-          {preview}
-        </p>
-      </CardContent>
-
-      <CardFooter>
         <CardAction>
           <ButtonGroup>
             <Button
               variant="primary"
-              size="sm"
+              size="icon-sm"
+              aria-label={`View ${note.title || "note"}`}
               onClick={() =>
                 navigate({
                   to: "/notes/viewer/$noteId",
@@ -77,7 +71,7 @@ export function NoteCard({
                 })
               }
             >
-              View
+              <Eye className="size-4" />
             </Button>
 
             <ButtonGroupSeparator />
@@ -87,10 +81,17 @@ export function NoteCard({
               open={noteToDelete === note.id}
               onOpenChange={(open) => setNoteToDelete(open ? note.id : null)}
               onDelete={onDelete}
+              iconOnly
             />
           </ButtonGroup>
         </CardAction>
-      </CardFooter>
+      </CardHeader>
+
+      <CardContent className="text-sm text-muted-foreground">
+        <p className="line-clamp-4 whitespace-pre-wrap wrap-break-word font-mono text-xs leading-relaxed sm:line-clamp-5 lg:line-clamp-6">
+          {preview}
+        </p>
+      </CardContent>
     </Card>
   );
 }

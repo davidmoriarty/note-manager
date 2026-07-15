@@ -249,7 +249,7 @@ function ProfilePage() {
 
 export const Route = createFileRoute("/profile")({
   beforeLoad: async () => {
-    requireAuth();
+    await requireAuth();
   },
 
   head: () =>

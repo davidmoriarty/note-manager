@@ -29,7 +29,7 @@ async function tryRefreshToken(): Promise<string | null> {
 
   if (!refreshRes.ok) {
     // Silent on initial boot: no cookie / expired cookie is normal
-    useAuth.getState().setToken(null);
+    useAuth.getState().clearSession();
     return null;
   }
 
@@ -37,18 +37,18 @@ async function tryRefreshToken(): Promise<string | null> {
   try {
     data = await refreshRes.json();
   } catch {
-    useAuth.getState().setToken(null);
+    useAuth.getState().clearSession();
     return null;
   }
 
   if (!isRefreshJson(data)) {
-    useAuth.getState().setToken(null);
+    useAuth.getState().clearSession();
     return null;
   }
 
   const newToken = data.token;
   if (!newToken) {
-    useAuth.getState().setToken(null);
+    useAuth.getState().clearSession();
     return null;
   }
 

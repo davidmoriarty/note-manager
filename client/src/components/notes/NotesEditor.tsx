@@ -1,20 +1,17 @@
-// @/components/notes/NotesEditor.tsx
+// client/src/components/notes/NotesEditor.tsx
+
 import { useForm } from "@tanstack/react-form";
 import { useEffect } from "react";
 import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import { toastMessage } from "@/components/ui/toast";
-import { InputGroup, InputGroupTextarea } from "@/components/ui/input-group";
+import { NotesPreview } from "@/components/notes/NotesPreview";
+import type { ViewMode } from "@/components/notes/note-editor-types";
+import { NoteEditorActions } from "@/components/notes/NoteEditorActions";
+import { NoteEditorFields } from "@/components/notes/NoteEditorFields";
 
 type NotesEditorProps = {
   note?: { title?: string; content?: string } | null;
+  mode: ViewMode;
   isNew?: boolean;
   onSave: (title: string, content: string) => Promise<void>;
   onDelete?: () => Promise<void>;
@@ -22,16 +19,6 @@ type NotesEditorProps = {
   onContentChange?: (content: string) => void;
   onBack?: () => void;
   isDirty?: boolean;
-};
-
-const handleCopy = async (text: string) => {
-  if (!text) return;
-  try {
-    await navigator.clipboard.writeText(text);
-    toastMessage("success", "Copied to clipboard!");
-  } catch {
-    toastMessage("error", "Failed to copy to clipboard!");
-  }
 };
 
 const MAX_CHARS = 2000;
@@ -43,6 +30,7 @@ const noteFormSchema = z.object({
 
 export function NotesEditor({
   note,
+  mode,
   isNew = false,
   onSave,
   onDelete,
@@ -82,165 +70,75 @@ export function NotesEditor({
 
   return (
     <form
-      className="h-full flex flex-col"
+      id="note-editor-form"
+      className="flex h-full flex-col"
       onSubmit={(e) => {
         e.preventDefault();
         form.handleSubmit();
       }}
     >
-      <FieldGroup className="flex-1 min-h-0">
-        <form.Field name="title">
-          {(field) => {
-            const isInvalid =
-              !field.state.meta.isValid && field.state.meta.isTouched;
-            return (
-              <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Note Title</FieldLabel>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => {
-                    field.handleChange(e.target.value);
-                    onTitleChange?.(e.target.value);
+      <form.Field name="title">
+        {(titleField) => (
+          <form.Field name="content">
+            {(contentField) => {
+              const isTitleInvalid =
+                !titleField.state.meta.isValid &&
+                titleField.state.meta.isTouched;
+
+              const isContentInvalid =
+                !contentField.state.meta.isValid &&
+                contentField.state.meta.isTouched;
+
+              const fields = (
+                <NoteEditorFields
+                  title={titleField.state.value}
+                  content={contentField.state.value}
+                  titleErrors={titleField.state.meta.errors}
+                  contentErrors={contentField.state.meta.errors}
+                  isTitleInvalid={isTitleInvalid}
+                  isContentInvalid={isContentInvalid}
+                  isDirty={isDirty}
+                  maxChars={MAX_CHARS}
+                  onTitleBlur={titleField.handleBlur}
+                  onContentBlur={contentField.handleBlur}
+                  onTitleChange={(value) => {
+                    titleField.handleChange(value);
+                    onTitleChange?.(value);
                   }}
-                  placeholder="Untitled Note"
-                  aria-invalid={isInvalid}
-                  autoComplete="off"
-                  className="bg-gray-50 dark:bg-gray-600 placeholder:text-muted-foreground placeholder:text-base placeholder:italic"
+                  onContentChange={(value) => {
+                    contentField.handleChange(value);
+                    onContentChange?.(value);
+                  }}
                 />
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
-        </form.Field>
+              );
 
-        <form.Field name="content">
-          {(field) => {
-            const isInvalid =
-              !field.state.meta.isValid && field.state.meta.isTouched;
-            const charCount = field.state.value.length;
-            const wordCount = field.state.value
-              .trim()
-              .split(/\s+/)
-              .filter(Boolean).length;
+              const preview = (
+                <NotesPreview
+                  title={titleField.state.value}
+                  content={contentField.state.value}
+                />
+              );
 
-            return (
-              <Field
-                data-invalid={isInvalid}
-                className="flex flex-col flex-1 min-h-[25vh] md:min-h-[40vh]"
-              >
-                <FieldLabel
-                  htmlFor={field.name}
-                  className="flex items-center justify-between"
-                >
-                  <span>Note Content</span>
-                  {/* COPY BUTTON */}
-                  <button
-                    type="button"
-                    onClick={() => void handleCopy(field.state.value)}
-                    disabled={!field.state.value}
-                    aria-label="Copy note content to clipboard"
-                    className="flex items-center gap-1 hover:text-primary transition-colors uppercase disabled:opacity-50 disabled:hover:text-inherit"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                    >
-                      <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-                    </svg>
-                    Copy
-                  </button>
-                </FieldLabel>
-                <InputGroup className="flex-1 min-h-0 flex flex-col border rounded-md overflow-hidden bg-white dark:bg-gray-600 focus-within:ring-2 focus-within:ring-primary/20">
-                  <InputGroupTextarea
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => {
-                      field.handleChange(e.target.value);
-                      onContentChange?.(e.target.value);
-                    }}
-                    className="flex-1 min-h-0 bg-gray-50 dark:bg-gray-600 text-base border rounded resize-none placeholder:text-muted-foreground placeholder:text-base placeholder:italic"
-                    placeholder="Untitled note content"
-                    aria-invalid={isInvalid}
-                  />
-
-                  {/* THE INFO PANEL / STATUS BAR */}
-                  <div className="w-full flex flex-wrap items-center justify-between px-3 py-1.5 bg-gray-200 dark:bg-gray-700 border border-t-0 rounded-b-md text-[10px] uppercase tracking-wider font-medium text-muted-foreground tabular-nums">
-                    <div className="flex gap-4 items-center">
-                      <span className="hidden md:inline-block">
-                        Markdown Mode
-                      </span>
-                      {/* STATUS INDICATOR */}
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className={`h-2 w-2 rounded-full animate-pulse ${isDirty ? "bg-amber-500" : "bg-emerald-500"}`}
-                        />
-                        {isDirty ? "Unsaved Changes" : "Synced"}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className="hidden md:inline">UTF-8</span>
-                      <span>Words: {wordCount}</span>
-                      <span>
-                        Chars: {charCount} / {MAX_CHARS}
-                      </span>
-                    </div>
+              if (mode === "dual") {
+                return (
+                  <div className="grid min-h-0 flex-1 grid-cols-2 gap-4">
+                    <div className="min-h-[50vh]">{fields}</div>
+                    <div className="min-h-[50vh]">{preview}</div>
                   </div>
-                </InputGroup>
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
-        </form.Field>
-      </FieldGroup>
+                );
+              }
 
-      <FieldGroup className="pt-6 shrink-0">
-        <Field orientation="horizontal">
-          <Button type="submit" variant="primary" size="sm">
-            {isNew ? "Create Note" : "Save Changes"}
-          </Button>
+              return (
+                <div className="min-h-0 flex-1">
+                  {mode === "editor" ? fields : preview}
+                </div>
+              );
+            }}
+          </form.Field>
+        )}
+      </form.Field>
 
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            onClick={() => onBack?.()}
-          >
-            Cancel
-          </Button>
-
-          {!isNew && onDelete && (
-            <Button
-              type="button"
-              variant="destructive"
-              size="sm"
-              onClick={async () => {
-                try {
-                  await onDelete();
-                  toastMessage("success", "Note deleted!");
-                } catch {
-                  toastMessage("error", "Failed to delete note.");
-                }
-              }}
-            >
-              Delete
-            </Button>
-          )}
-        </Field>
-      </FieldGroup>
+      <NoteEditorActions isNew={isNew} onBack={onBack} onDelete={onDelete} />
     </form>
   );
 }

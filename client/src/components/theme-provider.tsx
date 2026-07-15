@@ -1,6 +1,9 @@
-import { createContext, useContext, useEffect, useState } from "react";
+// client/src/components/theme-provider.tsx
+
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 type Theme = "dark" | "light" | "system";
+type ResolvedTheme = "dark" | "light";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -10,29 +13,29 @@ type ThemeProviderProps = {
 
 type ThemeProviderState = {
   theme: Theme;
+  resolvedTheme: ResolvedTheme;
   setTheme: (theme: Theme) => void;
 };
 
-const initialState: ThemeProviderState = {
-  theme: "system",
-  setTheme: () => null,
-};
+const ThemeProviderContext = createContext<ThemeProviderState | undefined>(
+  undefined,
+);
 
-const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
-
-function resolveTheme(theme: Theme): "dark" | "light" {
+function resolveTheme(theme: Theme): ResolvedTheme {
   if (theme !== "system") return theme;
-  return window.matchMedia?.("(prefers-color-scheme: dark)").matches
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
     ? "dark"
     : "light";
 }
 
-function syncHighlightTheme(resolved: "dark" | "light") {
+function syncHighlightTheme(resolved: ResolvedTheme) {
   const id = "hljs-theme";
   const href =
     resolved === "dark" ? "/hljs/github-dark.css" : "/hljs/github.css";
 
   let link = document.querySelector<HTMLLinkElement>(`link#${id}`);
+
   if (!link) {
     link = document.createElement("link");
     link.id = id;
@@ -41,17 +44,23 @@ function syncHighlightTheme(resolved: "dark" | "light") {
   }
 
   const absolute = new URL(href, window.location.origin).href;
-  if (link.href !== absolute) link.href = href;
+
+  if (link.href !== absolute) {
+    link.href = href;
+  }
 }
 
 export function ThemeProvider({
   children,
   defaultTheme = "system",
-  storageKey = "vite-ui-theme",
-  ...props
+  storageKey = "note-manager-theme",
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
+  const [theme, setThemeState] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
+  );
+
+  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() =>
+    resolveTheme(theme),
   );
 
   useEffect(() => {
@@ -60,33 +69,36 @@ export function ThemeProvider({
     const apply = () => {
       const resolved = resolveTheme(theme);
 
+      setResolvedTheme(resolved);
       root.classList.remove("light", "dark");
       root.classList.add(resolved);
-
       syncHighlightTheme(resolved);
     };
 
     apply();
 
-    // When theme === "system", keep in sync with OS changes
-    if (theme === "system") {
-      const mq = window.matchMedia("(prefers-color-scheme: dark)");
-      const handler = () => apply();
-      mq.addEventListener?.("change", handler);
-      return () => mq.removeEventListener?.("change", handler);
-    }
+    if (theme !== "system") return;
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    mediaQuery.addEventListener("change", apply);
+
+    return () => mediaQuery.removeEventListener("change", apply);
   }, [theme]);
 
-  const value = {
-    theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
-    },
-  };
+  const value = useMemo(
+    () => ({
+      theme,
+      resolvedTheme,
+      setTheme: (nextTheme: Theme) => {
+        localStorage.setItem(storageKey, nextTheme);
+        setThemeState(nextTheme);
+      },
+    }),
+    [resolvedTheme, storageKey, theme],
+  );
 
   return (
-    <ThemeProviderContext.Provider {...props} value={value}>
+    <ThemeProviderContext.Provider value={value}>
       {children}
     </ThemeProviderContext.Provider>
   );
@@ -95,8 +107,9 @@ export function ThemeProvider({
 export const useTheme = () => {
   const context = useContext(ThemeProviderContext);
 
-  if (context === undefined)
+  if (!context) {
     throw new Error("useTheme must be used within a ThemeProvider");
+  }
 
   return context;
 };

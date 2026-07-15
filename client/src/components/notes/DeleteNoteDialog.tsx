@@ -1,4 +1,5 @@
 // client/src/components/notes/DeleteNoteDialog.tsx
+import { Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,6 +18,7 @@ interface DeleteNoteDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onDelete: (id: number) => void;
+  iconOnly?: boolean;
 }
 
 export function DeleteNoteDialog({
@@ -24,6 +26,7 @@ export function DeleteNoteDialog({
   open,
   onOpenChange,
   onDelete,
+  iconOnly = false,
 }: DeleteNoteDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -32,8 +35,9 @@ export function DeleteNoteDialog({
           variant="destructive"
           size="sm"
           onClick={() => onOpenChange(true)}
+          aria-label="Delete note"
         >
-          Delete
+          {iconOnly ? <Trash2 className="size-4" /> : "Delete"}
         </Button>
       </AlertDialogTrigger>
 

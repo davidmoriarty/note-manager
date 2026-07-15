@@ -12,6 +12,7 @@ import {
   ButtonGroupSeparator,
 } from "@/components/ui/button-group";
 import { LinkButton } from "@/components/ui/LinkButton";
+import { Badge } from "@/components/ui/badge";
 import { notesApi } from "@/lib/api";
 import { buildHead } from "@/lib/meta";
 import { requireAuth } from "@/lib/route-guard";
@@ -26,44 +27,38 @@ const formatDate = (ts: string | Date) =>
 function NotesViewerSkeleton() {
   return (
     <PageTransition>
-      <Section>
-        <Container padding="px-4 md:px-6 lg:px-8" className="max-w-7xl">
-          <div className="space-y-2">
-            <SlideUp delay={0}>
-              <h1 className="text-4xl font-black tracking-tight">Note View</h1>
-            </SlideUp>
-            <SlideUp delay={40}>
-              <p className="text-muted-foreground">
-                See the full content of your note. If you want to edit it, click
-                on the edit button.
-              </p>
-            </SlideUp>
-          </div>
+      <NotesViewerHeader />
 
+      <Section padding="pt-4 pb-8">
+        <Container padding="px-4 md:px-6 lg:px-8" className="max-w-7xl">
           <article
             className="
-              border border-gray-300 dark:border-gray-600 rounded
-              prose dark:prose-invert p-4 pb-0 space-y-4
-            "
+              mx-auto w-full max-w-4xl rounded-lg border border-gray-300 p-5 shadow sm:p-8 dark:border-gray-600"
           >
-            <header className="font-bold prose-2xl">
-              <Skeleton className="h-8 w-3/4 animate-pulse" />
-            </header>
+            <Skeleton className="h-8 w-2/3 animate-pulse" />
 
-            <section className="py-4">
-              <div className="w-full animate-pulse">
-                <Skeleton className="h-75 w-full my-6" />
-              </div>
-            </section>
+            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 w-36" />
+            </div>
 
-            <section className="pb-6 mt-4">
-              <ButtonGroup>
-                <LinkButton to="/notes" variant="secondary" size="md">
-                  Back
-                </LinkButton>
-              </ButtonGroup>
-            </section>
+            <div className="mt-2 flex gap-2">
+              <Skeleton className="h-5 w-20 rounded-full" />
+              <Skeleton className="h-5 w-16 rounded-full" />
+            </div>
+
+            <div className="py-4">
+              <Skeleton className="h-75 w-full animate-pulse" />
+            </div>
           </article>
+
+          <div className="mx-auto w-full max-w-4xl">
+            <ButtonGroup className="mt-6">
+              <LinkButton to="/notes" variant="secondary" size="md">
+                Back
+              </LinkButton>
+            </ButtonGroup>
+          </div>
         </Container>
       </Section>
     </PageTransition>
@@ -75,35 +70,30 @@ function NotesViewerPage() {
 
   return (
     <PageTransition>
-      <Section padding="py-8">
-        <Container padding="px-4 md:px-6 lg:px-8" className="max-w-7xl">
-          <div className="space-y-2">
-            <SlideUp delay={0}>
-              <h1 className="text-4xl font-black tracking-tight">Note View</h1>
-            </SlideUp>
-            <SlideUp delay={40}>
-              <p className="text-muted-foreground">
-                See the full content of your note. If you want to edit it, click
-                on the edit button.
-              </p>
-            </SlideUp>
-          </div>
-        </Container>
-      </Section>
+      <NotesViewerHeader />
 
       <Section padding="pt-4 pb-8">
         <Container padding="px-4 md:px-6 lg:px-8" className="max-w-7xl">
-          <article className="mx-auto min-w-full border border-gray-300 dark:border-gray-600 rounded prose dark:prose-invert shadow p-8 space-y-2">
-            <header className="font-bold prose-2xl">{note.title}</header>
+          <article className="mx-auto w-full max-w-4xl rounded-lg border border-gray-300 p-5 shadow sm:p-8 dark:border-gray-600">
+            <header className="text-2xl font-bold tracking-tight sm:text-3xl">
+              {note.title}
+            </header>
 
-            <section className="prose dark:prose-invert">
-              <p>Created: {formatDate(note.createdAt)}</p>
-              <p>Last updated: {formatDate(note.updatedAt)}</p>
-            </section>
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+              <span>Created {formatDate(note.createdAt)}</span>
+              <span>Updated {formatDate(note.updatedAt)}</span>
+            </div>
+
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+              <Badge variant="outline">Markdown</Badge>
+              <Badge variant="outline">
+                {note.published ? "Published" : "Private"}
+              </Badge>
+            </div>
 
             <section className="py-4">
               <MarkdownRenderer
-                content={note.content || "No content available"}
+                content={note.content}
                 className="[&_.prose_pre+pre]:mt-4"
               />
             </section>
@@ -133,7 +123,7 @@ function NotesViewerPage() {
 
 export const Route = createFileRoute("/notes/viewer/$noteId")({
   beforeLoad: async () => {
-    requireAuth();
+    await requireAuth();
   },
 
   loader: async ({ params }) => {
@@ -168,3 +158,24 @@ export const Route = createFileRoute("/notes/viewer/$noteId")({
 
   component: NotesViewerPage,
 });
+
+function NotesViewerHeader() {
+  return (
+    <Section padding="py-8">
+      <Container padding="px-4 md:px-6 lg:px-8" className="max-w-7xl">
+        <div className="space-y-2">
+          <SlideUp delay={0}>
+            <h1 className="text-4xl font-black tracking-tight">Note View</h1>
+          </SlideUp>
+
+          <SlideUp delay={40}>
+            <p className="text-muted-foreground">
+              See the full content of your note. If you want to edit it, click
+              the edit button.
+            </p>
+          </SlideUp>
+        </div>
+      </Container>
+    </Section>
+  );
+}

@@ -1,36 +1,32 @@
 // client/src/lib/auth-loader.ts
 import { setAuthToken, useAuth } from "./auth";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 let refreshing: Promise<void> | null = null;
 
 export async function AuthLoader() {
-  if (useAuth.getState().token) return;
   if (refreshing) return refreshing;
 
   refreshing = (async () => {
-    const setToken = useAuth.getState().setToken;
-
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/refresh`, {
+    const res = await fetch(`${API_URL}/auth/refresh`, {
       method: "POST",
       credentials: "include",
     });
 
-    // Silent "not logged in" path
-    if (res.status === 401) {
-      setToken(null);
+    if (res.status === 204) {
+      useAuth.getState().clearSession();
       return;
     }
 
-    // Other failures: also just reset state (still no noise)
     if (!res.ok) {
-      setToken(null);
+      useAuth.getState().clearSession();
       return;
     }
 
-    // Only parse JSON when we know it's OK
     const { token } = (await res.json()) as { token: string };
+
     setAuthToken(token);
-    setToken(token);
   })().finally(() => {
     refreshing = null;
   });

@@ -3,11 +3,13 @@
 export const REFRESH_EXPIRES_SECONDS = 60 * 60 * 24 * 30;
 
 function baseOptions() {
+  const isProduction = process.env.NODE_ENV === "production";
+
   return {
     httpOnly: true,
     path: "/",
-    sameSite: "None" as const,
-    secure: true,
+    sameSite: isProduction ? ("None" as const) : ("Lax" as const),
+    secure: isProduction,
   };
 }
 

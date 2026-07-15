@@ -80,6 +80,7 @@ function RegisterPage() {
                   type="text"
                   placeholder="Full name"
                   value={form.name}
+                  autoComplete="name"
                   onChange={(e) =>
                     setForm((f) => ({ ...f, name: e.target.value }))
                   }
@@ -102,6 +103,7 @@ function RegisterPage() {
                   type="email"
                   placeholder="Email"
                   value={form.email}
+                  autoComplete="email"
                   onChange={(e) =>
                     setForm((f) => ({ ...f, email: e.target.value }))
                   }
@@ -124,6 +126,7 @@ function RegisterPage() {
                   type="password"
                   placeholder="Password"
                   value={form.password}
+                  autoComplete="new-password"
                   onChange={(e) =>
                     setForm((f) => ({ ...f, password: e.target.value }))
                   }

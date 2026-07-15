@@ -53,6 +53,13 @@ export async function cleanupExpiredDemoUsers() {
 export async function createDemoSession() {
   await cleanupExpiredDemoUsers();
 
+  const now = Date.now();
+  const demoNoteDates = {
+    welcome: new Date(now - 3 * 60 * 60 * 1000),
+    projectIdeas: new Date(now - 2 * 60 * 60 * 1000),
+    markdown: new Date(now - 1 * 60 * 60 * 1000),
+  };
+
   const user = await prisma.user.create({
     data: {
       email: `demo-${crypto.randomUUID()}@example.com`,
@@ -66,16 +73,19 @@ export async function createDemoSession() {
             title: "Welcome to Note Manager",
             content:
               "# Welcome to Note Manager\n\nThis demo workspace includes a few sample notes so you can explore the app without creating an account.",
+            createdAt: demoNoteDates.welcome,
           },
           {
             title: "Project Ideas",
             content:
               "# Project Ideas\n\n- Build a reusable BHVR starter template\n- Add demo mode to portfolio apps\n- Improve shared UI components",
+            createdAt: demoNoteDates.projectIdeas,
           },
           {
             title: "Markdown Notes",
             content:
               "# Markdown Notes\n\nNote Manager supports markdown-style writing for structured notes, drafts, and project documentation.",
+            createdAt: demoNoteDates.markdown,
           },
         ],
       },

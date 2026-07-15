@@ -6,14 +6,16 @@ import { notesApi } from "@/lib/api";
 import { buildHead } from "@/lib/meta";
 import { requireAuth } from "@/lib/route-guard";
 
+const DRAFT_KEY = "note-manager:draft:new-note";
+
 function NewNotePage() {
   const navigate = useNavigate();
 
-  const DRAFT_KEY = "note-manager:draft:new-note";
-
   const [title, setTitle] = useState(() => {
     const raw = localStorage.getItem(DRAFT_KEY);
+
     if (!raw) return "";
+
     try {
       const saved = JSON.parse(raw) as { title?: string };
       return saved.title ?? "";
@@ -24,7 +26,9 @@ function NewNotePage() {
 
   const [content, setContent] = useState(() => {
     const raw = localStorage.getItem(DRAFT_KEY);
+
     if (!raw) return "";
+
     try {
       const saved = JSON.parse(raw) as { content?: string };
       return saved.content ?? "";
@@ -57,6 +61,11 @@ function NewNotePage() {
     navigate({ to: "/notes" });
   };
 
+  const handleCancel = () => {
+    localStorage.removeItem(DRAFT_KEY);
+    navigate({ to: "/notes" });
+  };
+
   return (
     <NoteEditorShell
       heading="Create Note"
@@ -69,14 +78,14 @@ function NewNotePage() {
       }}
       isDirty={isDirty}
       onSave={handleSave}
-      onBack={() => navigate({ to: "/notes" })}
+      onBack={handleCancel}
     />
   );
 }
 
 export const Route = createFileRoute("/notes/editor/")({
   beforeLoad: async () => {
-    requireAuth();
+    await requireAuth();
   },
 
   head: () =>

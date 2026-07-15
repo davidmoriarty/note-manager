@@ -1,12 +1,14 @@
 // client/src/routes/login.tsx
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { DEMO_WELCOME_KEY } from "@/lib/demo";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { SlideUp } from "@/components/motion/SlideUp";
 import { Section } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
 import { AuthFormShell } from "@/components/auth/AuthFormShell";
 import { AuthLoadingOverlay } from "@/components/auth/AuthLoadingOverlay";
+import { useAuth } from "@/lib/auth";
 import { DemoButton } from "@/components/demo/DemoButton";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel, FieldSet } from "@/components/ui/field";
@@ -44,6 +46,7 @@ function LoginPage() {
     "login" | "demo" | null
   >(null);
   const isAuthLoading = authLoadingMode !== null;
+  const setAuthTransitioning = useAuth((state) => state.setAuthTransitioning);
   const [authSucceeded, setAuthSucceeded] = useState(false);
   const [errors, setErrors] = useState({
     form: null as string | null,
@@ -55,6 +58,7 @@ function LoginPage() {
     e.preventDefault();
 
     setErrors({ email: null, password: null, form: null });
+    setAuthTransitioning(true);
     setAuthLoadingMode("login");
 
     const result = await submitLogin(form);
@@ -64,7 +68,9 @@ function LoginPage() {
       return;
     }
 
+    setAuthTransitioning(false);
     setAuthLoadingMode(null);
+
     setErrors((prev) => ({
       ...prev,
       ...result.fieldErrors,
@@ -74,16 +80,20 @@ function LoginPage() {
 
   const handleDemoLogin = async () => {
     setErrors({ email: null, password: null, form: null });
+    setAuthTransitioning(true);
     setAuthLoadingMode("demo");
 
     const result = await submitDemoLogin({});
 
     if (result.ok) {
+      sessionStorage.removeItem(DEMO_WELCOME_KEY);
       setAuthSucceeded(true);
       return;
     }
 
+    setAuthTransitioning(false);
     setAuthLoadingMode(null);
+
     setErrors((prev) => ({
       ...prev,
       form: result.formError ?? result.fieldErrors?.form ?? "Demo login failed",
@@ -102,7 +112,9 @@ function LoginPage() {
           steps={overlay.steps}
           onComplete={() => {
             if (authSucceeded) {
-              navigate({ to: "/notes", replace: true });
+              navigate({ to: "/notes", replace: true }).then(() => {
+                setAuthTransitioning(false);
+              });
             }
           }}
         />
@@ -138,6 +150,7 @@ function LoginPage() {
                   type="email"
                   placeholder="Email"
                   value={form.email}
+                  autoComplete="email"
                   onChange={(e) =>
                     setForm((f) => ({ ...f, email: e.target.value }))
                   }
@@ -160,6 +173,7 @@ function LoginPage() {
                   type="password"
                   placeholder="Password"
                   value={form.password}
+                  autoComplete="current-password"
                   onChange={(e) =>
                     setForm((f) => ({ ...f, password: e.target.value }))
                   }

@@ -87,6 +87,11 @@ function NoteEditorPage() {
     navigate({ to: "/notes/viewer/$noteId", params: { noteId } });
   };
 
+  const handleCancel = () => {
+    localStorage.removeItem(DRAFT_KEY);
+    navigate({ to: "/notes/viewer/$noteId", params: { noteId } });
+  };
+
   const handleDelete = async () => {
     await notesApi.remove(Number(noteId));
     localStorage.removeItem(DRAFT_KEY);
@@ -106,16 +111,14 @@ function NoteEditorPage() {
       isDirty={isDirty}
       onSave={handleSave}
       onDelete={handleDelete}
-      onBack={() =>
-        navigate({ to: "/notes/viewer/$noteId", params: { noteId } })
-      }
+      onBack={handleCancel}
     />
   );
 }
 
 export const Route = createFileRoute("/notes/editor/$noteId")({
   beforeLoad: async () => {
-    requireAuth();
+    await requireAuth();
   },
 
   loader: async ({ params }) => {
