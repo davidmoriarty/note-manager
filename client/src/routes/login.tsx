@@ -1,6 +1,6 @@
 // client/src/routes/login.tsx
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DEMO_WELCOME_KEY } from "@/lib/demo";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { SlideUp } from "@/components/motion/SlideUp";
@@ -48,11 +48,20 @@ function LoginPage() {
   const isAuthLoading = authLoadingMode !== null;
   const setAuthTransitioning = useAuth((state) => state.setAuthTransitioning);
   const [authSucceeded, setAuthSucceeded] = useState(false);
+  const [overlayCompleted, setOverlayCompleted] = useState(false);
   const [errors, setErrors] = useState({
     form: null as string | null,
     email: null as string | null,
     password: null as string | null,
   });
+
+  useEffect(() => {
+    if (!authSucceeded || !overlayCompleted) return;
+
+    navigate({ to: "/notes", replace: true }).then(() => {
+      setAuthTransitioning(false);
+    });
+  }, [authSucceeded, overlayCompleted, navigate, setAuthTransitioning]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,6 +69,8 @@ function LoginPage() {
     setErrors({ email: null, password: null, form: null });
     setAuthTransitioning(true);
     setAuthLoadingMode("login");
+    setAuthSucceeded(false);
+    setOverlayCompleted(false);
 
     const result = await submitLogin(form);
 
@@ -69,6 +80,8 @@ function LoginPage() {
     }
 
     setAuthTransitioning(false);
+    setAuthSucceeded(false);
+    setOverlayCompleted(false);
     setAuthLoadingMode(null);
 
     setErrors((prev) => ({
@@ -82,6 +95,8 @@ function LoginPage() {
     setErrors({ email: null, password: null, form: null });
     setAuthTransitioning(true);
     setAuthLoadingMode("demo");
+    setAuthSucceeded(false);
+    setOverlayCompleted(false);
 
     const result = await submitDemoLogin({});
 
@@ -92,6 +107,8 @@ function LoginPage() {
     }
 
     setAuthTransitioning(false);
+    setAuthSucceeded(false);
+    setOverlayCompleted(false);
     setAuthLoadingMode(null);
 
     setErrors((prev) => ({
@@ -110,13 +127,7 @@ function LoginPage() {
           open={isAuthLoading}
           title={overlay.title}
           steps={overlay.steps}
-          onComplete={() => {
-            if (authSucceeded) {
-              navigate({ to: "/notes", replace: true }).then(() => {
-                setAuthTransitioning(false);
-              });
-            }
-          }}
+          onComplete={() => setOverlayCompleted(true)}
         />
       )}
 
