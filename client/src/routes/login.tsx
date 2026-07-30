@@ -41,6 +41,30 @@ const authOverlayContent = {
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { reason, redirect } = Route.useSearch();
+
+  const [sessionNotice] = useState(() => {
+    if (reason === "demo-expired") {
+      return "Your demo session ended. Start a new demo session to continue.";
+    }
+
+    if (reason === "session-expired") {
+      return "Your session expired. Please sign in again.";
+    }
+
+    return null;
+  });
+
+  useEffect(() => {
+    if (!reason) return;
+
+    void navigate({
+      to: "/login",
+      search: redirect ? { redirect } : {},
+      replace: true,
+    });
+  }, [navigate, reason, redirect]);
+
   const [form, setForm] = useState({ email: "", password: "" });
   const [authLoadingMode, setAuthLoadingMode] = useState<
     "login" | "demo" | null
@@ -145,6 +169,14 @@ function LoginPage() {
             </SlideUp>
           </div>
         </Container>
+
+        {sessionNotice && (
+          <Container padding="px-4 md:px-6 lg:px-8" className="mt-6 max-w-7xl">
+            <output className="block rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-100">
+              {sessionNotice}
+            </output>
+          </Container>
+        )}
       </Section>
 
       <Section padding="pt-8 pb-12 md:pt-12 lg:pt-16">
@@ -235,7 +267,25 @@ function LoginPage() {
   );
 }
 
+type LoginSearch = {
+  redirect?: string;
+  reason?: "session-expired" | "demo-expired";
+};
+
+function validateLoginSearch(search: Record<string, unknown>): LoginSearch {
+  const reason =
+    search.reason === "session-expired" || search.reason === "demo-expired"
+      ? search.reason
+      : undefined;
+
+  return {
+    redirect: typeof search.redirect === "string" ? search.redirect : undefined,
+    reason,
+  };
+}
+
 export const Route = createFileRoute("/login")({
+  validateSearch: validateLoginSearch,
   head: () =>
     buildHead({
       title: "Sign in",

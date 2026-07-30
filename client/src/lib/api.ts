@@ -1,7 +1,9 @@
 // client/src/lib/api.ts
+
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 import { setAuthToken, useAuth } from "./auth";
+import { dispatchSessionExpired } from "./session-expiry";
 import type { UserDto, UserBaseDto, MeStatsDto, NoteDto } from "@shared";
 
 type AuthLoginDto = UserBaseDto & {
@@ -21,6 +23,16 @@ function isRefreshJson(v: unknown): v is RefreshJson {
   );
 }
 
+function expireCurrentSession(): void {
+  const { isDemoUser, user } = useAuth.getState();
+
+  useAuth.getState().clearSession();
+
+  if (user) {
+    dispatchSessionExpired(isDemoUser ? "demo-expired" : "session-expired");
+  }
+}
+
 async function tryRefreshToken(): Promise<string | null> {
   const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
     method: "POST",
@@ -29,7 +41,7 @@ async function tryRefreshToken(): Promise<string | null> {
 
   if (!refreshRes.ok) {
     // Silent on initial boot: no cookie / expired cookie is normal
-    useAuth.getState().clearSession();
+    expireCurrentSession();
     return null;
   }
 
@@ -37,18 +49,18 @@ async function tryRefreshToken(): Promise<string | null> {
   try {
     data = await refreshRes.json();
   } catch {
-    useAuth.getState().clearSession();
+    expireCurrentSession();
     return null;
   }
 
   if (!isRefreshJson(data)) {
-    useAuth.getState().clearSession();
+    expireCurrentSession();
     return null;
   }
 
   const newToken = data.token;
   if (!newToken) {
-    useAuth.getState().clearSession();
+    expireCurrentSession();
     return null;
   }
 

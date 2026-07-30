@@ -1,4 +1,5 @@
 // client/src/components/AuthLoader.tsx
+
 import { type ReactNode, useEffect, useState } from "react";
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";

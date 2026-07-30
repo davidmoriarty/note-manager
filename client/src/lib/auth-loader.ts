@@ -1,9 +1,21 @@
 // client/src/lib/auth-loader.ts
+
 import { setAuthToken, useAuth } from "./auth";
+import { dispatchSessionExpired } from "./session-expiry";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 let refreshing: Promise<void> | null = null;
+
+function expireCurrentSession(): void {
+  const { isDemoUser, user } = useAuth.getState();
+
+  useAuth.getState().clearSession();
+
+  if (user) {
+    dispatchSessionExpired(isDemoUser ? "demo-expired" : "session-expired");
+  }
+}
 
 export async function AuthLoader() {
   if (refreshing) return refreshing;
@@ -15,12 +27,12 @@ export async function AuthLoader() {
     });
 
     if (res.status === 204) {
-      useAuth.getState().clearSession();
+      expireCurrentSession();
       return;
     }
 
     if (!res.ok) {
-      useAuth.getState().clearSession();
+      expireCurrentSession();
       return;
     }
 
