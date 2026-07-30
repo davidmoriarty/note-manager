@@ -15,7 +15,7 @@ const buttonVariants = cva(
 				neutral: "bg-neutral-400 text-white",
 				stone: "bg-stone-400 text-white",
 				blue: "bg-blue-400 text-white",
-				sky: "bg-sky-500 text-white hover:bg-sky-400",
+				sky: "bg-sky-600 text-white hover:bg-sky-500",
 				cyan: "bg-cyan-400 text-white",
 				lime: "bg-lime-400 text-white",
 				teal: "bg-teal-400 text-white",
