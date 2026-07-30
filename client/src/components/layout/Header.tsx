@@ -13,9 +13,9 @@ export function Header() {
     <header className="sticky top-0 inset-x-0 z-40 bg-gray-50 dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700">
       <Container padding="px-4 sm:px-6 md:px-8" className="max-w-7xl">
         <div className="flex flex-row items-center justify-between py-4">
-          <a href="/" className="text-lg font-black">
+          <Link to="/" className="text-lg font-black">
             Note Manager
-          </a>
+          </Link>
 
           <nav className="flex flex-row items-center gap-x-2 sm:gap-x-4">
             {isAuthenticated && <Link to="/notes">Notes</Link>}

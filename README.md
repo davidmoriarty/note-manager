@@ -79,6 +79,21 @@ Full-stack notes application demonstrating secure JWT authentication, rotating r
 
 ---
 
+## Performance & Lighthouse
+
+Current Lighthouse results (production):
+
+| Device | Performance | Accessibility | Best Practices | SEO |
+| :------ | ----------: | ------------: | -------------: | --: |
+| Desktop | 100 | 100 | 100 | 100 |
+| Mobile | 97 | 100 | 81* | 100 |
+
+\* The remaining Best Practices warnings originate from Cloudflare's JavaScript challenge (`/cdn-cgi/challenge-platform/scripts/jsd/main.js`) rather than the application or its dependencies.
+
+Lighthouse CLI audits may report significantly lower Performance scores than Chrome DevTools because Cloudflare's JavaScript challenge can add additional scripting time during automated audits. Interactive browser audits more accurately reflect application performance.
+
+---
+
 ## Architecture
 
 Monorepo structure:
