@@ -29,7 +29,7 @@ export function FeaturesSection() {
           </SlideUp>
 
           <SlideUp delay={40}>
-            <p className="text-muted-foreground">
+            <p className="text-foreground/80">
               A quick overview of the purpose and design behind the project.
             </p>
           </SlideUp>
