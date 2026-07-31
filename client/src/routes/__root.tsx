@@ -1,3 +1,5 @@
+// client/src/routes/__root.tsx
+
 import { createRootRoute, HeadContent, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { useEffect } from "react";
@@ -13,16 +15,18 @@ function RootLayout() {
   }, []);
 
   return (
-    <>
+    <div className="flex min-h-screen flex-col">
       <HeadContent />
       <Header />
-      <main className="flex flex-col">
+
+      <main className="flex flex-1 flex-col">
         <Outlet />
       </main>
+
       <Footer />
       <Toaster />
       {import.meta.env.DEV && <TanStackRouterDevtools />}
-    </>
+    </div>
   );
 }
 

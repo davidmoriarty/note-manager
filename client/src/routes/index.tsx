@@ -1,4 +1,5 @@
 // client/src/routes/index.tsx
+
 import { createFileRoute } from "@tanstack/react-router";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { PageHeader } from "@/components/layout/PageHeader";

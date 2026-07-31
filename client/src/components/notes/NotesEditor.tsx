@@ -3,7 +3,7 @@
 import { useForm } from "@tanstack/react-form";
 import { useEffect } from "react";
 import * as z from "zod";
-import { toastMessage } from "@/components/ui/toast";
+import { toast } from "@/components/ui/toast";
 import { NotesPreview } from "@/components/notes/NotesPreview";
 import type { ViewMode } from "@/components/notes/note-editor-types";
 import { NoteEditorActions } from "@/components/notes/NoteEditorActions";
@@ -51,12 +51,9 @@ export function NotesEditor({
       try {
         await onSave(value.title, value.content);
         form.reset(value);
-        toastMessage("success", isNew ? "Note Created!" : "Note updated!");
+        toast.success(isNew ? "Note Created!" : "Note updated!");
       } catch (_err) {
-        toastMessage(
-          "error",
-          isNew ? "Failed to save note" : "Failed to update note",
-        );
+        toast.error(isNew ? "Failed to save note" : "Failed to update note");
       }
     },
   });

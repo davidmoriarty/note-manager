@@ -1,3 +1,5 @@
+// client/src/routes/register.tsx
+
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageTransition } from "@/components/motion/PageTransition";

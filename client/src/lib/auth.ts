@@ -1,4 +1,5 @@
 // client/src/lib/auth.ts
+
 import { create } from "zustand";
 import { authApi } from "./api";
 import type { UserBaseDto, UserDto } from "@shared";

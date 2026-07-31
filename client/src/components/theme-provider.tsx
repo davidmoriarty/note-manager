@@ -1,6 +1,14 @@
 // client/src/components/theme-provider.tsx
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { toast } from "@/components/ui/toast";
 
 type Theme = "dark" | "light" | "system";
 type ResolvedTheme = "dark" | "light";
@@ -62,17 +70,25 @@ export function ThemeProvider({
   const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() =>
     resolveTheme(theme),
   );
+  const resolvedThemeRef = useRef(resolvedTheme);
 
   useEffect(() => {
     const root = window.document.documentElement;
 
-    const apply = () => {
+    const apply = (notify = false) => {
       const resolved = resolveTheme(theme);
+      const previousResolved = resolvedThemeRef.current;
 
+      resolvedThemeRef.current = resolved;
       setResolvedTheme(resolved);
+
       root.classList.remove("light", "dark");
       root.classList.add(resolved);
       syncHighlightTheme(resolved);
+
+      if (notify && previousResolved !== resolved) {
+        toast.info(`System theme changed to ${resolved}.`);
+      }
     };
 
     apply();
@@ -80,9 +96,11 @@ export function ThemeProvider({
     if (theme !== "system") return;
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    mediaQuery.addEventListener("change", apply);
+    const handleChange = () => apply(true);
 
-    return () => mediaQuery.removeEventListener("change", apply);
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, [theme]);
 
   const value = useMemo(

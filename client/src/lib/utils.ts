@@ -1,3 +1,5 @@
+// client/src/lib/utils.ts
+
 import { useNavigate } from "@tanstack/react-router";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";

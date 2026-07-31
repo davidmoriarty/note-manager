@@ -1,4 +1,5 @@
 // client/src/lib/note-preview.ts
+
 export function notePreviewText(
   markdown: string,
   opts?: { maxChars?: number; codeLines?: number; includeHeading?: boolean },
@@ -100,5 +101,6 @@ export function stripHtmlOutsideCodeFences(src: string) {
     out += cleanedParts[i] ?? "";
     if (fences[i]) out += fences[i];
   }
+
   return out;
 }

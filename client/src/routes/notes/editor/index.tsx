@@ -1,4 +1,5 @@
 // client/src/routes/notes/editor/index.tsx
+
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { NoteEditorShell } from "@/components/notes/NoteEditorShell";

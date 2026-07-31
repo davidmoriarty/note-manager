@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { InputGroup, InputGroupTextarea } from "@/components/ui/input-group";
-import { toastMessage } from "@/components/ui/toast";
+import { toast } from "@/components/ui/toast";
 
 type FieldValidationError = {
   message?: string;
@@ -36,9 +36,9 @@ const handleCopy = async (text: string) => {
 
   try {
     await navigator.clipboard.writeText(text);
-    toastMessage("success", "Copied to clipboard!");
+    toast.success("Copied to clipboard!");
   } catch {
-    toastMessage("error", "Failed to copy to clipboard!");
+    toast.error("Failed to copy to clipboard!");
   }
 };
 
@@ -83,7 +83,7 @@ export function NoteEditorFields({
 
       <Field
         data-invalid={isContentInvalid}
-        className="flex min-h-[25vh] flex-1 flex-col md:min-h-[40vh]"
+        className="flex min-h-[25dvh] flex-1 flex-col md:min-h-[40vh]"
       >
         <FieldLabel htmlFor="content" className="sr-only">
           Note Content

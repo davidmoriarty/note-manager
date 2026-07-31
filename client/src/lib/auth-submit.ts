@@ -1,4 +1,5 @@
 // client/src/lib/auth-submit.ts
+
 import { authApi } from "./api";
 import { setAuthToken, useAuth } from "./auth";
 import type { AuthSubmit } from "./auth-contract";

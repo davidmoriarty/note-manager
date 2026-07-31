@@ -1,4 +1,5 @@
 // client/src/lib/route-guard.ts
+
 import { redirect } from "@tanstack/react-router";
 import { AuthLoader } from "./auth-loader";
 import { useAuth } from "./auth";

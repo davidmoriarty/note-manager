@@ -1,4 +1,5 @@
 // client/src/routes/notes/index.tsx
+
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
@@ -18,7 +19,7 @@ import { Container } from "@/components/layout/Container";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { LinkButton } from "@/components/ui/LinkButton";
 import { Skeleton } from "@/components/ui/skeleton";
-import { toastMessage } from "@/components/ui/toast";
+import { toast } from "@/components/ui/toast";
 import { DemoWelcomeDialog } from "@/components/demo/DemoWelcomeDialog";
 import type { NoteDto } from "@shared";
 import { useAuth } from "@/lib/auth";
@@ -92,7 +93,7 @@ function NotesOverviewPage() {
     const params = new URLSearchParams(window.location.search);
     const success = params.get("success");
     if (success) {
-      toastMessage("success", success);
+      toast.success(success);
       window.history.replaceState(null, "", window.location.pathname);
     }
   }, []);
@@ -112,7 +113,7 @@ function NotesOverviewPage() {
         setNotes(fetched);
       } catch (err) {
         console.error("Failed to fetch notes:", err);
-        toastMessage("error", "Failed to load notes.");
+        toast.error("Failed to load notes.");
       } finally {
         setIsLoading(false);
       }
@@ -126,10 +127,10 @@ function NotesOverviewPage() {
       await notesApi.remove(id);
       setNotes((prev) => prev.filter((n) => n.id !== id));
       setNoteToDelete(null);
-      toastMessage("success", "Note deleted!");
+      toast.success("Note deleted!");
     } catch (err) {
       console.error(err);
-      toastMessage("error", "Failed to delete note.");
+      toast.error("Failed to delete note.");
     }
   };
 

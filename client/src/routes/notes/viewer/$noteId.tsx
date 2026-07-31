@@ -1,4 +1,5 @@
 // client/src/routes/notes/viewer/$noteId.tsx
+
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { MarkdownRenderer } from "@/components/notes/MarkdownRenderer";
 import { ErrorPage } from "@/components/error/ErrorPage";

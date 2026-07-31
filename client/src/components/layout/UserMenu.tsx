@@ -1,7 +1,9 @@
 // client/src/components/layout/UserMenu.tsx
+
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { LogIn, LogOut, User, UserPlus } from "lucide-react";
 import { DemoBadge } from "../demo/DemoBadge";
+import { toast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -30,12 +32,15 @@ export function UserMenu() {
 
   const handleLogout = async () => {
     const result = await submitLogout({});
-    if (result.ok) {
-      // Redirect after logout
-      navigate({ to: "/login" });
-    } else {
+
+    if (!result.ok) {
       console.warn("Logout failed:", result.formError);
+      toast.error(result.formError ?? "Failed to sign out.");
+      return;
     }
+
+    await navigate({ to: "/login" });
+    toast.success("Signed out.");
   };
 
   return (

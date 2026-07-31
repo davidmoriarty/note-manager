@@ -1,4 +1,5 @@
 // client/src/lib/rpc.ts
+
 import { hc } from "hono/client";
 
 const BASE_URL =

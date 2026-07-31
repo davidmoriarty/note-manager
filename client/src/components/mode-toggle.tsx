@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "@/components/ui/toast";
 
 type Theme = "light" | "dark" | "system";
 
@@ -72,7 +73,18 @@ export function ModeToggle() {
         {themeOptions.map(({ value, label, icon: Icon }) => (
           <DropdownMenuItem
             key={value}
-            onSelect={() => setTheme(value)}
+            onSelect={() => {
+              if (value === theme) return;
+
+              setTheme(value);
+
+              if (value === "system") {
+                toast.info("Theme now follows your system settings.");
+                return;
+              }
+
+              toast.success(`Theme changed to ${value}.`);
+            }}
             className="gap-2"
           >
             <Icon className="size-4" />

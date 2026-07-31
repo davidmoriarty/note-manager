@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup } from "@/components/ui/field";
-import { toastMessage } from "@/components/ui/toast";
+import { toast } from "@/components/ui/toast";
 
 type NoteEditorActionsProps = {
   isNew: boolean;
@@ -34,9 +34,9 @@ export function NoteEditorActions({
             onClick={async () => {
               try {
                 await onDelete();
-                toastMessage("success", "Note deleted");
+                toast.success("Note deleted");
               } catch {
-                toastMessage("error", "Failed to delete note.");
+                toast.error("Failed to delete note.");
               }
             }}
           >

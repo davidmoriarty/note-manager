@@ -1,4 +1,5 @@
 // client/src/routes/login.tsx
+
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { DEMO_WELCOME_KEY } from "@/lib/demo";
