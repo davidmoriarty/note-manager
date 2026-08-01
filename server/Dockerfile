@@ -31,6 +31,9 @@ COPY --from=deps /app/tsconfig.json ./tsconfig.json
 COPY server ./server
 COPY shared ./shared
 
+# Generate Prisma client
+RUN bunx --bun prisma generate --schema ./server/prisma/schema.prisma
+
 # Build shared + server
 RUN bunx turbo build --filter=shared --filter=server
 
