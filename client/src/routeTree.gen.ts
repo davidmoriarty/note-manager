@@ -9,26 +9,21 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as RegisterRouteImport } from './routes/register'
-import { Route as ProfileRouteImport } from './routes/profile'
-import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as NotesIndexRouteImport } from './routes/notes/index'
-import { Route as Errors500RouteImport } from './routes/_errors/500'
-import { Route as Errors403RouteImport } from './routes/_errors/403'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as Errors401RouteImport } from './routes/_errors/401'
+import { Route as Errors403RouteImport } from './routes/_errors/403'
+import { Route as Errors500RouteImport } from './routes/_errors/500'
+import { Route as NotesIndexRouteImport } from './routes/notes/index'
 import { Route as NotesEditorIndexRouteImport } from './routes/notes/editor/index'
-import { Route as NotesViewerNoteIdRouteImport } from './routes/notes/viewer/$noteId'
 import { Route as NotesEditorNoteIdRouteImport } from './routes/notes/editor/$noteId'
+import { Route as NotesViewerNoteIdRouteImport } from './routes/notes/viewer/$noteId'
 
-const RegisterRoute = RegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -36,24 +31,14 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NotesIndexRoute = NotesIndexRouteImport.update({
-  id: '/notes/',
-  path: '/notes/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const Errors500Route = Errors500RouteImport.update({
-  id: '/_errors/500',
-  path: '/500',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const Errors403Route = Errors403RouteImport.update({
-  id: '/_errors/403',
-  path: '/403',
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Errors401Route = Errors401RouteImport.update({
@@ -61,19 +46,34 @@ const Errors401Route = Errors401RouteImport.update({
   path: '/401',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Errors403Route = Errors403RouteImport.update({
+  id: '/_errors/403',
+  path: '/403',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Errors500Route = Errors500RouteImport.update({
+  id: '/_errors/500',
+  path: '/500',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotesIndexRoute = NotesIndexRouteImport.update({
+  id: '/notes/',
+  path: '/notes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NotesEditorIndexRoute = NotesEditorIndexRouteImport.update({
   id: '/notes/editor/',
   path: '/notes/editor/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NotesViewerNoteIdRoute = NotesViewerNoteIdRouteImport.update({
-  id: '/notes/viewer/$noteId',
-  path: '/notes/viewer/$noteId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const NotesEditorNoteIdRoute = NotesEditorNoteIdRouteImport.update({
   id: '/notes/editor/$noteId',
   path: '/notes/editor/$noteId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotesViewerNoteIdRoute = NotesViewerNoteIdRouteImport.update({
+  id: '/notes/viewer/$noteId',
+  path: '/notes/viewer/$noteId',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -85,10 +85,10 @@ export interface FileRoutesByFullPath {
   '/401': typeof Errors401Route
   '/403': typeof Errors403Route
   '/500': typeof Errors500Route
-  '/notes': typeof NotesIndexRoute
+  '/notes/': typeof NotesIndexRoute
   '/notes/editor/$noteId': typeof NotesEditorNoteIdRoute
   '/notes/viewer/$noteId': typeof NotesViewerNoteIdRoute
-  '/notes/editor': typeof NotesEditorIndexRoute
+  '/notes/editor/': typeof NotesEditorIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -127,10 +127,10 @@ export interface FileRouteTypes {
     | '/401'
     | '/403'
     | '/500'
-    | '/notes'
+    | '/notes/'
     | '/notes/editor/$noteId'
     | '/notes/viewer/$noteId'
-    | '/notes/editor'
+    | '/notes/editor/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -175,18 +175,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/register': {
-      id: '/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -196,32 +189,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/notes/': {
-      id: '/notes/'
-      path: '/notes'
-      fullPath: '/notes'
-      preLoaderRoute: typeof NotesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_errors/500': {
-      id: '/_errors/500'
-      path: '/500'
-      fullPath: '/500'
-      preLoaderRoute: typeof Errors500RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_errors/403': {
-      id: '/_errors/403'
-      path: '/403'
-      fullPath: '/403'
-      preLoaderRoute: typeof Errors403RouteImport
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_errors/401': {
@@ -231,18 +210,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Errors401RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_errors/403': {
+      id: '/_errors/403'
+      path: '/403'
+      fullPath: '/403'
+      preLoaderRoute: typeof Errors403RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_errors/500': {
+      id: '/_errors/500'
+      path: '/500'
+      fullPath: '/500'
+      preLoaderRoute: typeof Errors500RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notes/': {
+      id: '/notes/'
+      path: '/notes'
+      fullPath: '/notes/'
+      preLoaderRoute: typeof NotesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/notes/editor/': {
       id: '/notes/editor/'
       path: '/notes/editor'
-      fullPath: '/notes/editor'
+      fullPath: '/notes/editor/'
       preLoaderRoute: typeof NotesEditorIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/notes/viewer/$noteId': {
-      id: '/notes/viewer/$noteId'
-      path: '/notes/viewer/$noteId'
-      fullPath: '/notes/viewer/$noteId'
-      preLoaderRoute: typeof NotesViewerNoteIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/notes/editor/$noteId': {
@@ -250,6 +243,13 @@ declare module '@tanstack/react-router' {
       path: '/notes/editor/$noteId'
       fullPath: '/notes/editor/$noteId'
       preLoaderRoute: typeof NotesEditorNoteIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notes/viewer/$noteId': {
+      id: '/notes/viewer/$noteId'
+      path: '/notes/viewer/$noteId'
+      fullPath: '/notes/viewer/$noteId'
+      preLoaderRoute: typeof NotesViewerNoteIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }

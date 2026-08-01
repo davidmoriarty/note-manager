@@ -6,7 +6,7 @@
     "rootDir": "src",
     "outDir": "dist",
     "allowJs": false,
-    "types": ["bun-types"],
+    "types": ["bun"],
     "noEmit": false,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true
