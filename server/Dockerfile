@@ -22,6 +22,7 @@ WORKDIR /app
 
 # Reuse deps
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/server/node_modules ./server/node_modules
 COPY --from=deps /app/bun.lock ./bun.lock
 COPY --from=deps /app/package.json ./package.json
 COPY --from=deps /app/turbo.json ./turbo.json
