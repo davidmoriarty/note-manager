@@ -1,5 +1,5 @@
 # server/Dockerfile
-FROM oven/bun:1.3.9 AS deps
+FROM oven/bun:1.3.14 AS deps
 WORKDIR /app
 
 # Copy root manifests first
@@ -17,7 +17,7 @@ COPY shared/tsconfig.json ./shared/tsconfig.json
 # Install at repo root for workspaces
 RUN bun install --frozen-lockfile --ignore-scripts
 
-FROM oven/bun:1.3.9 AS build
+FROM oven/bun:1.3.14 AS build
 WORKDIR /app
 
 # Reuse deps
@@ -34,7 +34,7 @@ COPY shared ./shared
 # Build shared + server
 RUN bunx turbo build --filter=shared --filter=server
 
-FROM oven/bun:1.3.9 AS runner
+FROM oven/bun:1.3.14 AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
