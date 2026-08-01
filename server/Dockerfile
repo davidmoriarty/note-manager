@@ -44,6 +44,7 @@ ENV NODE_ENV=production
 
 # Runtime needs deps + built output
 COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/server/node_modules ./server/node_modules
 COPY --from=build /app/server/dist ./server/dist
 COPY --from=build /app/server/package.json ./server/package.json
 COPY --from=build /app/server/src/generated ./server/src/generated
